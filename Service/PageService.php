@@ -35,7 +35,7 @@ class PageService
         $this->urlService = $urlService;
         $this->primaryLocale = $localeService->getPrimaryLocale();
         $this->activeLocales = $localeService->getActiveLocales();
-        $this->pages = $cacheLoaderFactory->create("agit.ui.pages")->load();
+        $this->pages = $cacheLoaderFactory->create("agit.pages")->load();
     }
 
     public function parseRequest($request)

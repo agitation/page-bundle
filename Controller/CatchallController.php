@@ -21,7 +21,7 @@ class CatchallController extends Controller
         $request = "/$request"; // for consistency
         $response = null;
 
-        $pageService = $this->get('agit.ui.page');
+        $pageService = $this->get('agit.page');
         $localeService = $this->get('agit.intl.locale');
 
         // we'll try to provide error messages in the UA's language until the real locale is set
