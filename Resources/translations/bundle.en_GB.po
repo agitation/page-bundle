@@ -5,28 +5,29 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "nplurals=2; plural=(n != 1);\n"
 
-#: @AgitPageBundle/Resources/public/js/lib/ApiCall.js:83
-msgid "Call failed or returned an invalid response."
+#: @AgitPageBundle/Resources/views/Special/unauthorized.html.twig:25
+msgid "Please log in to access this page."
 msgstr ""
 
-#: @AgitPageBundle/Resources/public/js/lib/MessageHandlerDialog.js:15
-msgid "Ok"
-msgstr ""
-
-#: @AgitPageBundle/Resources/views/Special/notfound.html.twig:34
+#: @AgitPageBundle/Resources/views/Special/unauthorized.html.twig:33
 msgctxt "page title"
-msgid "Page not found"
+msgid "Unauthorized"
 msgstr ""
 
-#: @AgitPageBundle/Resources/views/Special/notfound.html.twig:52
-msgid "The requested page could not be found. Please check the spelling of the address, or notify the owner of the referring web page."
+#: @AgitPageBundle/Resources/views/Special/forbidden.html.twig:25
+msgid "You are not allowed to access this page."
 msgstr ""
 
-#: @AgitPageBundle/Resources/views/Special/unauthorized.html.twig:34
+#: @AgitPageBundle/Resources/views/Special/forbidden.html.twig:33
 msgctxt "page title"
 msgid "Forbidden"
 msgstr ""
 
-#: @AgitPageBundle/Resources/views/Special/unauthorized.html.twig:52
-msgid "The requested page cannot be viewed by you. Please log in, or contact an administrator if you need to access this page."
+#: @AgitPageBundle/Resources/views/Special/notfound.html.twig:25
+msgid "The requested page could not be found. Please check the spelling of the address, or notify the owner of the referring web page."
+msgstr ""
+
+#: @AgitPageBundle/Resources/views/Special/notfound.html.twig:33
+msgctxt "page title"
+msgid "Page not found"
 msgstr ""
