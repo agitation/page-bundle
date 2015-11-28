@@ -1,0 +1,26 @@
+services:
+
+    agit.pages:
+        class: Agit\PageBundle\Service\PageService
+        arguments: [ @agit.pluggable.cache.loader_factory, @agit.common.url, @agit.intl.locale, @?agit.user ]
+        tags: [{ name: agit.pluggable, type: cache, tag: agit.ui.pages, baseClass: Agit\PageBundle\Plugin\UiPagePlugin }]
+
+    # Handles our custom Twig syntax for the page meta data
+    agit.ui.custom:
+        class: Agit\PageBundle\TwigMeta\PageConfigTokenExtension
+        tags:
+            - { name: twig.extension }
+
+    # misc template functions
+    agit.ui.pagecontent:
+        class: Agit\PageBundle\Twig\PageContentExtension
+        tags:
+            - { name: twig.extension }
+        arguments:  [ @agit.ui.page, @agit.intl.locale, @?agit.localedata.language ]
+
+    # page navigation functions
+    agit.ui.pagenavigation:
+        class: Agit\PageBundle\Twig\PageNavigationExtension
+        tags:
+            - { name: twig.extension }
+        arguments:  [@agit.ui.page]

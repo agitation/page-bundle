@@ -1,0 +1,6 @@
+AgitPageBundle:
+    pattern:  /{request}
+    host: %agit.common.domain.app%
+    defaults: { _controller: AgitPageBundle:Catchall:dispatcher }
+    requirements:
+        request: ".*"

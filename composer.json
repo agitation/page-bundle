@@ -1,0 +1,37 @@
+{
+    "name": "agitation/page-bundle",
+    "type": "symfony-bundle",
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=5.4.9",
+        "symfony/symfony": "2.3.*",
+        "agitation/common": "dev-master",
+        "agitation/pluggable": "dev-master",
+        "agitation/intl": "dev-master"
+    },
+    "suggest": {
+        "agitation/user": "Required to check user capabilities. Without it, pages requiring a capability cannot be displayed.",
+        "agitation/localedata": "Required to display a language switcher with actual localized language names."
+    },
+    "autoload": {
+        "psr-4": {
+            "Agit\\PageBundle\\": ""
+        }
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "AGITsol GmbH",
+            "homepage": "http://www.agitsol.com/"
+        }
+    ],
+    "description": "Provides an extendable component for user interfaces (i.e. web pages) and their templates for the Agitation framework.",
+    "keywords": [
+        "agit",
+        "agitation",
+        "tixys",
+        "tixys",
+        "capabilities",
+        "pluggable"
+    ]
+}

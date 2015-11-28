@@ -1,0 +1,32 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"nplurals=2; plural=(n != 1);\n"
+
+#: @AgitPageBundle/Resources/public/js/lib/ApiCall.js:83
+msgid "Call failed or returned an invalid response."
+msgstr ""
+
+#: @AgitPageBundle/Resources/public/js/lib/MessageHandlerDialog.js:15
+msgid "Ok"
+msgstr ""
+
+#: @AgitPageBundle/Resources/views/Special/notfound.html.twig:34
+msgctxt "page title"
+msgid "Page not found"
+msgstr ""
+
+#: @AgitPageBundle/Resources/views/Special/notfound.html.twig:52
+msgid "The requested page could not be found. Please check the spelling of the address, or notify the owner of the referring web page."
+msgstr ""
+
+#: @AgitPageBundle/Resources/views/Special/unauthorized.html.twig:34
+msgctxt "page title"
+msgid "Forbidden"
+msgstr ""
+
+#: @AgitPageBundle/Resources/views/Special/unauthorized.html.twig:52
+msgid "The requested page cannot be viewed by you. Please log in, or contact an administrator if you need to access this page."
+msgstr ""
