@@ -5,9 +5,9 @@
     "require": {
         "php": ">=5.4.9",
         "symfony/symfony": "2.3.*",
-        "agitation/common": "dev-master",
-        "agitation/pluggable": "dev-master",
-        "agitation/intl": "dev-master"
+        "agitation/common-bundle": "dev-master",
+        "agitation/pluggable-bundle": "dev-master",
+        "agitation/intl-bundle": "dev-master"
     },
     "suggest": {
         "agitation/user": "Required to check user capabilities. Without it, pages requiring a capability cannot be displayed.",
@@ -24,14 +24,5 @@
             "name": "AGITsol GmbH",
             "homepage": "http://www.agitsol.com/"
         }
-    ],
-    "description": "Provides an extendable component for user interfaces (i.e. web pages) and their templates for the Agitation framework.",
-    "keywords": [
-        "agit",
-        "agitation",
-        "tixys",
-        "tixys",
-        "capabilities",
-        "pluggable"
     ]
 }
