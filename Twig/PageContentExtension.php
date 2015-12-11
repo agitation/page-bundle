@@ -31,21 +31,21 @@ class PageContentExtension extends \Twig_Extension
 
     public function getName()
     {
-        return 'agit.ui.pagecontent';
+        return 'agit.page.pagecontent';
     }
 
     public function getFunctions()
     {
         return [
-            'createUrl' => new \Twig_Function_Method($this, 'createUrl', ['needs_context' => true, 'is_safe' => ['all']]),
+            'createUrl' => new \Twig_Function_Method($this, 'createUrl', ['is_safe' => ['all']]),
             'getPageLocaleUrls' => new \Twig_Function_Method($this, 'getPageLocaleUrls', ['needs_context' => true, 'is_safe' => ['all']])
         ];
     }
 
     // returns the canonical path of the given path
-    public function createUrl($context, $vPath)
+    public function createUrl($vPath)
     {
-        return $this->pageService->createUrl($vPath, $context['locale']);
+        return $this->pageService->createUrl($vPath, $this->localeService->getLocale());
     }
 
     public function getPageLocaleUrls($context)
