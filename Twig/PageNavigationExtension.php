@@ -29,17 +29,17 @@ class PageNavigationExtension extends \Twig_Extension
 
     public function getName()
     {
-        return 'agit.page.navigation';
+        return "agit.page.navigation";
     }
 
     public function getFunctions()
     {
         return [
-            'getPageTree'   => new \Twig_Function_Method($this, 'getPageTree'),
-            'hasPrev'   => new \Twig_Function_Method($this, 'hasPrev',  ['needs_context' => true]),
-            'hasNext'   => new \Twig_Function_Method($this, 'hasNext',  ['needs_context' => true]),
-            'getPrev'   => new \Twig_Function_Method($this, 'getPrev',  ['needs_context' => true]),
-            'getNext'   => new \Twig_Function_Method($this, 'getNext',  ['needs_context' => true])
+            new \Twig_SimpleFunction("getPageTree", [$this, "getPageTree"]),
+            new \Twig_SimpleFunction("hasPrev", [$this, "hasPrev"],  ["needs_context" => true]),
+            new \Twig_SimpleFunction("hasNext", [$this, "hasNext"],  ["needs_context" => true]),
+            new \Twig_SimpleFunction("getPrev", [$this, "getPrev"],  ["needs_context" => true]),
+            new \Twig_SimpleFunction("getNext", [$this, "getNext"],  ["needs_context" => true])
         ];
     }
 
@@ -50,22 +50,22 @@ class PageNavigationExtension extends \Twig_Extension
 
     public function hasPrev($context)
     {
-        return (bool)$this->getPrevNext($context['vPath'], -1);
+        return (bool)$this->getPrevNext($context["vPath"], -1);
     }
 
     public function getPrev($context)
     {
-        return $this->getPrevNext($context['vPath'], -1);
+        return $this->getPrevNext($context["vPath"], -1);
     }
 
     public function hasNext($context)
     {
-        return (bool)$this->getPrevNext($context['vPath'], 1);
+        return (bool)$this->getPrevNext($context["vPath"], 1);
     }
 
     public function getNext($context)
     {
-        return $this->getPrevNext($context['vPath'], 1);
+        return $this->getPrevNext($context["vPath"], 1);
     }
 
     private function getPrevNext($vPath, $offset)
@@ -78,19 +78,19 @@ class PageNavigationExtension extends \Twig_Extension
         }
         else
         {
-            $dir = dirname($vPath) . '/';
+            $dir = dirname($vPath) . "/";
 
             if (is_null($this->pages))
                 $this->pages = $this->pageService->getPages();
 
             $pages = array_filter($this->pages, function($page) use ($dir){
-                return (strpos($page['vPath'], $dir) === 0);
+                return (strpos($page["vPath"], $dir) === 0);
             });
 
             if (isset($pages[$vPath]))
             {
                 uasort($pages, function($page1, $page2) {
-                    return $page1['order'] - $page2['order'];
+                    return $page1["order"] - $page2["order"];
                 });
 
                 $pagesIdx = array_keys($pages);

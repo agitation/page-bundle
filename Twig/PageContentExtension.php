@@ -31,14 +31,14 @@ class PageContentExtension extends \Twig_Extension
 
     public function getName()
     {
-        return 'agit.page.pagecontent';
+        return "agit.page.pagecontent";
     }
 
     public function getFunctions()
     {
         return [
-            'createUrl' => new \Twig_Function_Method($this, 'createUrl', ['is_safe' => ['all']]),
-            'getPageLocaleUrls' => new \Twig_Function_Method($this, 'getPageLocaleUrls', ['needs_context' => true, 'is_safe' => ['all']])
+            new \Twig_SimpleFunction("createUrl", [$this, "createUrl"], ["is_safe" => ["all"]]),
+            new \Twig_SimpleFunction("getPageLocaleUrls", [$this, "getPageLocaleUrls"], ["needs_context" => true, "is_safe" => ["all"]])
         ];
     }
 
@@ -52,7 +52,7 @@ class PageContentExtension extends \Twig_Extension
     {
         $list = [];
 
-        if (isset($context['localeUrls']))
+        if (isset($context["localeUrls"]))
         {
             if (is_null($this->languageRepository))
                 throw new InternalErrorException(sprintf("The %s function needs the LanguageRepository.", __METHOD__));
@@ -62,7 +62,7 @@ class PageContentExtension extends \Twig_Extension
 
             foreach ($localeList as $localeCode)
             {
-                if (strlen($localeCode) !== 5 || $localeCode[2] !== '_') continue;
+                if (strlen($localeCode) !== 5 || $localeCode[2] !== "_") continue;
 
                 $langCode = substr($localeCode, 0, 2);
                 $countryCode = substr($localeCode, 3);
@@ -73,7 +73,7 @@ class PageContentExtension extends \Twig_Extension
                 $languageCountryMap[$langCode][] = $countryCode;
             }
 
-            foreach ($context['localeUrls'] as $locale => $url)
+            foreach ($context["localeUrls"] as $locale => $url)
             {
                 $lang = substr($locale, 0, 2);
                 $country = substr($locale, 3);
@@ -87,19 +87,19 @@ class PageContentExtension extends \Twig_Extension
                         $name .= " ($country)";
 
                     $list[$locale] = [
-                        'url' => $url,
-                        'name' => $name,
-                        'isCurrent' => $locale === $this->localeService->getLocale()
+                        "url" => $url,
+                        "name" => $name,
+                        "isCurrent" => $locale === $this->localeService->getLocale()
                     ];
                 }
             }
         }
 
-        if (class_exists('Collator'))
+        if (class_exists("Collator"))
         {
             $collator = new \Collator($this->localeService->getLocale());
             usort($list, function($elem1, $elem2) use ($collator) {
-                return $collator->compare($elem1['name'], $elem2['name']);
+                return $collator->compare($elem1["name"], $elem2["name"]);
             });
         }
 
@@ -108,7 +108,7 @@ class PageContentExtension extends \Twig_Extension
 
     private function sortList($list)
     {
-        if (class_exists('Collator'))
+        if (class_exists("Collator"))
         {
             $collator = new \Collator($this->localeService->getLocale());
             $collator->asort($list);
