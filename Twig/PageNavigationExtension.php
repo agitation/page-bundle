@@ -29,17 +29,23 @@ class PageNavigationExtension extends \Twig_Extension
 
     public function getName()
     {
-        return 'agit.ui.pagenavigation';
+        return 'agit.page.navigation';
     }
 
     public function getFunctions()
     {
         return [
+            'getPageTree'   => new \Twig_Function_Method($this, 'getPageTree'),
             'hasPrev'   => new \Twig_Function_Method($this, 'hasPrev',  ['needs_context' => true]),
             'hasNext'   => new \Twig_Function_Method($this, 'hasNext',  ['needs_context' => true]),
             'getPrev'   => new \Twig_Function_Method($this, 'getPrev',  ['needs_context' => true]),
             'getNext'   => new \Twig_Function_Method($this, 'getNext',  ['needs_context' => true])
         ];
+    }
+
+    public function getPageTree($base)
+    {
+        return $this->pageService->getTree($base);
     }
 
     public function hasPrev($context)
