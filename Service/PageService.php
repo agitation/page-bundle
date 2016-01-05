@@ -40,36 +40,36 @@ class PageService
 
     public function parseRequest($request)
     {
-        $reqParts = preg_split('|/+|', $request, null, PREG_SPLIT_NO_EMPTY);
+        $reqParts = preg_split("|/+|", $request, null, PREG_SPLIT_NO_EMPTY);
         $lang = end($reqParts);
         $locale = $this->getLocaleFromLangId($lang);
         if ($locale) array_pop($reqParts);
 
-        $vPath = '/' . implode('/', $reqParts);
-        $pageType = 'page';
+        $vPath = "/" . implode("/", $reqParts);
+        $pageType = "page";
 
         if (!$this->isPage($vPath))
         {
-            $pageType = 'special';
-            $vPath = '_notfound';
+            $pageType = "special";
+            $vPath = "_notfound";
         }
 
         if (!$locale || !in_array($locale, $this->activeLocales))
             $locale = $this->primaryLocale;
 
         $reqDetails = [
-            'request' => $request,
-            'vPath' => $vPath,
-            'locale' => $locale
+            "request" => $request,
+            "vPath" => $vPath,
+            "locale" => $locale
         ];
 
-        if ($pageType !== 'special')
+        if ($pageType !== "special")
         {
-            $reqDetails['localeUrls'] = [];
+            $reqDetails["localeUrls"] = [];
             foreach ($this->activeLocales as $activeLocale)
-                $reqDetails['localeUrls'][$activeLocale] = $this->createUrl($vPath, $activeLocale);
+                $reqDetails["localeUrls"][$activeLocale] = $this->createUrl($vPath, $activeLocale);
 
-            $reqDetails['canonical'] = parse_url($reqDetails['localeUrls'][$locale], PHP_URL_PATH);
+            $reqDetails["canonical"] = parse_url($reqDetails["localeUrls"][$locale], PHP_URL_PATH);
         }
 
         return $reqDetails;
@@ -78,7 +78,7 @@ class PageService
     public function createUrl($vPath, $locale, array $params = [])
     {
         $parts = [];
-        $vPath = trim($vPath, '/');
+        $vPath = trim($vPath, "/");
 
         if ($vPath)
             $parts[] = $vPath;
@@ -86,13 +86,13 @@ class PageService
         if ($locale && $locale !== $this->primaryLocale && in_array($locale, $this->activeLocales))
             $parts[] = substr($locale, 0, 2);
 
-        return $this->urlService->createAppUrl(implode('/', $parts), $params);
+        return $this->urlService->createAppUrl(implode("/", $parts), $params);
     }
 
     public function createRedirectResponse($url, $status = 302)
     {
-        $response = new Response(sprintf("<a href='%s'>%s</a>", htmlentities($url), 'Click here to continue.'), $status);
-        $response->headers->set('Location', $url);
+        $response = new Response(sprintf("<a href='%s'>%s</a>", htmlentities($url), "Click here to continue."), $status);
+        $response->headers->set("Location", $url);
         $response->headers->set("Cache-Control", "no-cache, must-revalidate, max-age=0", true);
         $response->headers->set("Pragma", "no-store", true);
 
@@ -103,22 +103,22 @@ class PageService
     {
         if (!$this->isPage($vPath))
         {
-            $page = $this->getPage('_notfound');
+            $page = $this->getPage("_notfound");
         }
         else
         {
             $page = $this->getPage($vPath);
 
-            if ($page['isVirtual'])
+            if ($page["isVirtual"])
             {
-                $page = $this->getPage('_notfound');
+                $page = $this->getPage("_notfound");
             }
-            elseif ($page['caps'])
+            elseif ($page["caps"])
             {
                 if (!$this->userService || !$this->userService->getCurrentUser())
-                    $page = $this->getPage('_unauthorized');
-                elseif (!$this->userService->currentUserCan($page['caps']))
-                    $page = $this->getPage('_forbidden');
+                    $page = $this->getPage("_unauthorized");
+                elseif (!$this->userService->currentUserCan($page["caps"]))
+                    $page = $this->getPage("_forbidden");
             }
         }
 
@@ -133,7 +133,7 @@ class PageService
     public function getPage($vPath)
     {
         if (!$this->isPage($vPath))
-            throw new InternalErrorException("Page '$vPath' does not exist.");
+            throw new InternalErrorException("Page `$vPath` does not exist.");
 
         return $this->pages[$vPath];
     }
@@ -169,23 +169,23 @@ class PageService
     }
 
     // NOTE: If the $prefix ends with a slash, the "root" page will be omitted, otherwise included.
-    private function createTree($pages, $prefix = '/')
+    private function createTree($pages, $prefix = "/")
     {
         ksort($pages);
-        $tree = array();
+        $tree = [];
 
         foreach ($pages as $vPath => $details)
         {
-            if ($vPath[0] === '_' || strpos($vPath, $prefix) !== 0) continue;
+            if ($vPath[0] === "_" || strpos($vPath, $prefix) !== 0) continue;
 
-            $vPathParts = array_filter(explode('/', trim(substr($vPath, strlen($prefix)), '/')));
+            $vPathParts = array_filter(explode("/", trim(substr($vPath, strlen($prefix)), "/")));
             $totalDepth = count($vPathParts);
             $curDepth = 0;
 
             // root index page
             if (count($vPathParts) === 0)
             {
-                $tree[''] = ['data' => $details, 'children'=>[]];
+                $tree[""] = ["data" => $details, "children" => []];
             }
             else
             {
@@ -200,14 +200,14 @@ class PageService
 
                     if ($curDepth === $totalDepth)
                     {
-                        $curBranch[$part]['data'] = $details;
+                        $curBranch[$part]["data"] = $details;
                     }
                     else
                     {
-                        if (!isset($curBranch[$part]['children']))
-                            $curBranch[$part]['children'] = [];
+                        if (!isset($curBranch[$part]["children"]))
+                            $curBranch[$part]["children"] = [];
 
-                        $curBranch = &$curBranch[$part]['children'];
+                        $curBranch = &$curBranch[$part]["children"];
                     }
                 }
             }
