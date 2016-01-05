@@ -121,7 +121,7 @@ final class PagePlugin implements CachePluginInterface, ServiceAwarePluginInterf
 
     protected function getOrderPosition($page)
     {
-        $pos = null;
+        $pos = 0;
         $parts = preg_split('|/+|', $page, null, PREG_SPLIT_NO_EMPTY);
 
         if (count($parts))
