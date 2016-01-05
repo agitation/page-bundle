@@ -45,7 +45,11 @@ class PageNavigationExtension extends \Twig_Extension
 
     public function getPageTree($base)
     {
-        return $this->pageService->getTree($base);
+        $tree = $this->pageService->getTree($base);
+
+        $this->sortTree($tree);
+
+        return $tree;
     }
 
     public function hasPrev($context)
@@ -108,5 +112,18 @@ class PageNavigationExtension extends \Twig_Extension
         return $return;
     }
 
+    private function sortTree(array &$tree)
+    {
+        uasort($tree, function($branch1, $branch2){
+            $diff = $branch1["data"]["order"] - $branch2["data"]["order"];
 
+            if ($diff === 0)    return 0;
+            elseif ($diff > 1)  return 1;
+            else                return -1;
+        });
+
+        foreach ($tree as &$branch)
+            if (isset($branch["children"]))
+                $this->sortTree($branch["children"]);
+    }
 }
