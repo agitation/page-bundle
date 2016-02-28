@@ -176,7 +176,7 @@ class PageService
 
         foreach ($pages as $vPath => $details)
         {
-            if ($vPath[0] === "_" || strpos($vPath, $prefix) !== 0) continue;
+            if ($vPath[0] === "_" || ($prefix && strpos($vPath, $prefix) !== 0)) continue;
 
             $vPathParts = array_filter(explode("/", trim(substr($vPath, strlen($prefix)), "/")));
             $totalDepth = count($vPathParts);
