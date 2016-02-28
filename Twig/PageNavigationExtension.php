@@ -46,7 +46,6 @@ class PageNavigationExtension extends \Twig_Extension
     public function getPageTree($base)
     {
         $tree = $this->pageService->getTree($base);
-
         $this->sortTree($tree);
 
         return $tree;
@@ -115,7 +114,12 @@ class PageNavigationExtension extends \Twig_Extension
     private function sortTree(array &$tree)
     {
         uasort($tree, function($branch1, $branch2){
-            $diff = $branch1["data"]["order"] - $branch2["data"]["order"];
+            if (!isset($branch1["data"]))
+                $diff = -1;
+            elseif (!isset($branch2["data"]))
+                $diff = 1;
+            else
+                $diff = $branch1["data"]["order"] - $branch2["data"]["order"];
 
             if ($diff === 0)    return 0;
             elseif ($diff > 1)  return 1;
