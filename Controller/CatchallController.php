@@ -10,9 +10,6 @@
 namespace Agit\PageBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Agit\CommonBundle\Exception\InternalErrorException;
-use Agit\PageBundle\Exception\NotFoundException;
-use Agit\PageBundle\Exception\UnauthorizedException;
 
 class CatchallController extends Controller
 {
