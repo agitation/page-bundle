@@ -10,11 +10,8 @@
 namespace Agit\PageBundle\Exception;
 
 use Agit\CommonBundle\Exception\AgitException;
-use Agit\CommonBundle\Exception\ExceptionCode;
 
 /**
- * @ExceptionCode("7.1")
- *
  * A page or form was requested which the current user is not allowed to access.
  */
 class UnauthorizedException extends AgitException { }

@@ -10,11 +10,8 @@
 namespace Agit\PageBundle\Exception;
 
 use Agit\CommonBundle\Exception\AgitException;
-use Agit\CommonBundle\Exception\ExceptionCode;
 
 /**
- * @ExceptionCode("7.0")
- *
  * A page or form was requested which does not exist.
  */
 class NotFoundException extends AgitException { }
