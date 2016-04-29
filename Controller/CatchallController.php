@@ -10,12 +10,13 @@
 namespace Agit\PageBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
 
 class CatchallController extends Controller
 {
-    public function dispatcherAction($request)
+    public function dispatcherAction(Request $request, $path)
     {
-        $request = "/$request"; // for consistency
+        $path = "/$path"; // for consistency
         $response = null;
 
         $pageService = $this->get('agit.page');
@@ -24,14 +25,14 @@ class CatchallController extends Controller
         // we'll try to provide error messages in the UA's language until the real locale is set
         $localeService->setLocale($localeService->getUserLocale());
 
-        $reqDetails = $pageService->parseRequest($request);
+        $reqDetails = $pageService->parseRequest($path);
 
         // now set the real locale as requested via URL
         $localeService->setLocale($reqDetails['locale']);
 
-        if (isset($reqDetails['canonical']) && $request !== $reqDetails['canonical'])
+        if (isset($reqDetails['canonical']) && $path !== $reqDetails['canonical'])
         {
-            parse_str($this->getRequest()->getQueryString(), $query);
+            parse_str($request->getQueryString(), $query);
             $redirectUrl = $pageService->createUrl($reqDetails['canonical'], '', $query);
             $response = $pageService->createRedirectResponse($redirectUrl, 301);
         }
