@@ -52,11 +52,8 @@ class PageContentExtension extends \Twig_Extension
     {
         $list = [];
 
-        if (isset($context["localeUrls"]))
+        if (isset($context["localeUrls"]) && $this->languageRepository)
         {
-            if (is_null($this->languageRepository))
-                throw new InternalErrorException(sprintf("The %s function needs the LanguageRepository.", __METHOD__));
-
             $localeList = $this->localeService->getActiveLocales();
             $languageCountryMap = [];
 
@@ -93,14 +90,14 @@ class PageContentExtension extends \Twig_Extension
                     ];
                 }
             }
-        }
 
-        if (class_exists("Collator"))
-        {
-            $collator = new \Collator($this->localeService->getLocale());
-            usort($list, function($elem1, $elem2) use ($collator) {
-                return $collator->compare($elem1["name"], $elem2["name"]);
-            });
+            if (class_exists("Collator"))
+            {
+                $collator = new \Collator($this->localeService->getLocale());
+                usort($list, function($elem1, $elem2) use ($collator) {
+                    return $collator->compare($elem1["name"], $elem2["name"]);
+                });
+            }
         }
 
         return $list;
