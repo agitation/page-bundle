@@ -14,4 +14,7 @@ use Agit\CommonBundle\Exception\AgitException;
 /**
  * A page or form was requested which does not exist.
  */
-class NotFoundException extends AgitException { }
+class NotFoundException extends AgitException
+{
+    protected $httpStatus = 404;
+}

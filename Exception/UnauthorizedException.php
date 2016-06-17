@@ -14,4 +14,7 @@ use Agit\CommonBundle\Exception\AgitException;
 /**
  * A page or form was requested which the current user is not allowed to access.
  */
-class UnauthorizedException extends AgitException { }
+class UnauthorizedException extends AgitException
+{
+    protected $httpStatus = 403;
+}
