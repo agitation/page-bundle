@@ -27,6 +27,8 @@ class PageService
 
     private $primaryLocale;
 
+    private $currentLocale;
+
     private $activeLocales;
 
     public function __construct(CacheLoaderFactory $cacheLoaderFactory, UrlService $urlService, LocaleService $localeService, UserService $userService = null)
@@ -34,7 +36,9 @@ class PageService
         $this->userService = $userService;
         $this->urlService = $urlService;
         $this->primaryLocale = $localeService->getPrimaryLocale();
+        $this->currentLocale = $localeService->getLocale();
         $this->activeLocales = $localeService->getActiveLocales();
+
         $this->pages = $cacheLoaderFactory->create("agit.pages")->load();
     }
 
@@ -75,7 +79,7 @@ class PageService
         return $reqDetails;
     }
 
-    public function createUrl($vPath, $locale, array $params = [])
+    public function createUrl($vPath, $locale = null, array $params = [])
     {
         $parts = [];
         $vPath = trim($vPath, "/");
@@ -83,7 +87,10 @@ class PageService
         if ($vPath)
             $parts[] = $vPath;
 
-        if ($locale && $locale !== $this->primaryLocale && in_array($locale, $this->activeLocales))
+        if ($locale === null)
+            $locale = $this->currentLocale;
+
+        if ($locale !== $this->primaryLocale && in_array($locale, $this->activeLocales))
             $parts[] = substr($locale, 0, 2);
 
         return $this->urlService->createAppUrl(implode("/", $parts), $params);
