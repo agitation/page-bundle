@@ -82,6 +82,14 @@ class PageService
     public function createUrl($vPath, $locale = null, array $params = [])
     {
         $parts = [];
+        $hash = "";
+
+        if (strpos($vPath, "#") !== false)
+        {
+            $hash = strstr($vPath, "#");
+            $vPath = strstr($vPath, "#", true);
+        }
+
         $vPath = trim($vPath, "/");
 
         if ($vPath)
@@ -93,7 +101,7 @@ class PageService
         if ($locale !== $this->primaryLocale && in_array($locale, $this->activeLocales))
             $parts[] = substr($locale, 0, 2);
 
-        return $this->urlService->createAppUrl(implode("/", $parts), $params);
+        return $this->urlService->createAppUrl(implode("/", $parts), $params) . $hash;
     }
 
     public function createRedirectResponse($url, $status = 302)
