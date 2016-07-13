@@ -21,7 +21,7 @@ use Agit\PluggableBundle\Strategy\Cache\CachePluginInterface;
 
 /**
  * @CachePlugin(tag="agit.pages")
- * @Depends({"kernel", "agit.common.filecollector", "twig"})
+ * @Depends({"@kernel", "@agit.common.filecollector", "@twig"})
  *
  * This plugin walks through *all* bundles and searches the Resources/views directory
  * for compatible pages.
