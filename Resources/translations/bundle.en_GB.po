@@ -1,33 +1,38 @@
 msgid ""
 msgstr ""
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"nplurals=2; plural=(n != 1);\n"
+"Language: en_GB\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
 
-#: @AgitPageBundle/Resources/views/Special/unauthorized.html.twig:28
-msgid "Please log in to access this page."
-msgstr ""
-
-#: @AgitPageBundle/Resources/views/Special/unauthorized.html.twig:42
-msgctxt "page title"
-msgid "Unauthorized"
-msgstr ""
-
-#: @AgitPageBundle/Resources/views/Special/notfound.html.twig:28
-msgid "The requested page could not be found. Please check the spelling of the address, or notify the owner of the referring web page."
-msgstr ""
-
-#: @AgitPageBundle/Resources/views/Special/notfound.html.twig:42
-msgctxt "page title"
-msgid "Page not found"
-msgstr ""
-
+#: @AgitPageBundle/Resources/views/Special/forbidden.html.twig:28
 #: @AgitPageBundle/Resources/views/Special/forbidden.html.twig:28
 msgid "You are not allowed to access this page."
 msgstr ""
 
 #: @AgitPageBundle/Resources/views/Special/forbidden.html.twig:42
+#: @AgitPageBundle/Resources/views/Special/forbidden.html.twig:42
 msgctxt "page title"
 msgid "Forbidden"
+msgstr ""
+
+#: @AgitPageBundle/Resources/views/Special/unauthorized.html.twig:28
+#: @AgitPageBundle/Resources/views/Special/unauthorized.html.twig:28
+msgid "Please log in to access this page."
+msgstr ""
+
+#: @AgitPageBundle/Resources/views/Special/unauthorized.html.twig:42
+#: @AgitPageBundle/Resources/views/Special/unauthorized.html.twig:42
+msgid "Unauthorized"
+msgstr ""
+
+#: @AgitPageBundle/Resources/views/Special/notfound.html.twig:28
+#: @AgitPageBundle/Resources/views/Special/notfound.html.twig:28
+#: @AgitUiBundle/Resources/views/Special/notfound.html.twig:56
+#: @AgitUiBundle/Resources/views/Special/notfound.html.twig:60
+msgid "The requested page could not be found. Please check the spelling of the address, or notify the owner of the referring web page."
+msgstr ""
+
+#: @AgitPageBundle/Resources/views/Special/notfound.html.twig:42
+#: @AgitPageBundle/Resources/views/Special/notfound.html.twig:42
+#: @AgitUiBundle/Resources/views/Special/notfound.html.twig:42
+msgid "Page not found"
 msgstr ""
