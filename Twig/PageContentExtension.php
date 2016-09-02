@@ -9,7 +9,7 @@
 
 namespace Agit\PageBundle\Twig;
 
-use Agit\CommonBundle\Exception\InternalErrorException;
+use Agit\BaseBundle\Exception\InternalErrorException;
 use Agit\IntlBundle\Service\LocaleService;
 use Agit\LocaleDataBundle\Entity\LanguageRepository;
 use Agit\PageBundle\Service\PageService;

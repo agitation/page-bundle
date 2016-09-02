@@ -9,7 +9,7 @@
 
 namespace Agit\PageBundle\Plugin;
 
-use Agit\CommonBundle\Exception\InternalErrorException;
+use Agit\BaseBundle\Exception\InternalErrorException;
 use Agit\PluggableBundle\Strategy\ServiceAwarePluginTrait;
 use Agit\PluggableBundle\Strategy\ServiceAwarePluginInterface;
 use Agit\PageBundle\TwigMeta\PageConfigNode;

@@ -9,7 +9,7 @@
 
 namespace Agit\PageBundle\Exception;
 
-use Agit\CommonBundle\Exception\AgitException;
+use Agit\BaseBundle\Exception\AgitException;
 
 /**
  * A page or form was requested which the current user is not allowed to access.
