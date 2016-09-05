@@ -10,13 +10,13 @@
 namespace Agit\PageBundle\Plugin;
 
 use Agit\BaseBundle\Exception\InternalErrorException;
-use Agit\PluggableBundle\Strategy\ServiceAwarePluginTrait;
-use Agit\PluggableBundle\Strategy\ServiceAwarePluginInterface;
+use Agit\BaseBundle\Pluggable\ServiceAwarePluginTrait;
+use Agit\BaseBundle\Pluggable\ServiceAwarePluginInterface;
 use Agit\PageBundle\TwigMeta\PageConfigNode;
-use Agit\PluggableBundle\Strategy\Depends;
-use Agit\PluggableBundle\Strategy\Cache\CacheEntry;
-use Agit\PluggableBundle\Strategy\Cache\CachePlugin;
-use Agit\PluggableBundle\Strategy\Cache\CachePluginInterface;
+use Agit\BaseBundle\Pluggable\Depends;
+use Agit\BaseBundle\Pluggable\Cache\CacheEntry;
+use Agit\BaseBundle\Pluggable\Cache\CachePlugin;
+use Agit\BaseBundle\Pluggable\Cache\CachePluginInterface;
 
 
 /**
