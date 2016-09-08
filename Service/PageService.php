@@ -15,7 +15,7 @@ use Agit\BaseBundle\Exception\InternalErrorException;
 use Agit\BaseBundle\Pluggable\Cache\CacheLoaderFactory;
 use Agit\BaseBundle\Service\UrlService;
 use Agit\UserBundle\Service\UserService;
-use Agit\BaseBundle\Service\LocaleService;
+use Agit\IntlBundle\Service\LocaleService;
 
 class PageService
 {
