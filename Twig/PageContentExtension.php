@@ -1,15 +1,14 @@
 <?php
-/**
+
+/*
  * @package    agitation/page-bundle
- * @link       http://github.com/agitation/AgitPageBundle
- * @author     Alex Günsche <http://www.agitsol.com/>
- * @copyright  2012-2015 AGITsol GmbH
+ * @link       http://github.com/agitation/page-bundle
+ * @author     Alexander Günsche
  * @license    http://opensource.org/licenses/MIT
  */
 
 namespace Agit\PageBundle\Twig;
 
-use Agit\BaseBundle\Exception\InternalErrorException;
 use Agit\IntlBundle\Service\LocaleService;
 use Agit\LocaleDataBundle\Entity\LanguageRepository;
 use Agit\PageBundle\Service\PageService;
@@ -52,49 +51,48 @@ class PageContentExtension extends \Twig_Extension
     {
         $list = [];
 
-        if (isset($context["localeUrls"]) && $this->languageRepository)
-        {
+        if (isset($context["localeUrls"]) && $this->languageRepository) {
             $localeList = $this->localeService->getActiveLocales();
             $languageCountryMap = [];
 
-            foreach ($localeList as $localeCode)
-            {
-                if (strlen($localeCode) !== 5 || $localeCode[2] !== "_") continue;
+            foreach ($localeList as $localeCode) {
+                if (strlen($localeCode) !== 5 || $localeCode[2] !== "_") {
+                    continue;
+                }
 
                 $langCode = substr($localeCode, 0, 2);
                 $countryCode = substr($localeCode, 3);
 
-                if (!isset($languageCountryMap[$langCode]))
+                if (! isset($languageCountryMap[$langCode])) {
                     $languageCountryMap[$langCode] = [];
+                }
 
                 $languageCountryMap[$langCode][] = $countryCode;
             }
 
-            foreach ($context["localeUrls"] as $locale => $url)
-            {
+            foreach ($context["localeUrls"] as $locale => $url) {
                 $lang = substr($locale, 0, 2);
                 $country = substr($locale, 3);
                 $language = $this->languageRepository->find($lang);
 
-                if ($language)
-                {
+                if ($language) {
                     $name = $language->getLocalName();
 
-                    if (count($languageCountryMap[$lang]) > 1)
+                    if (count($languageCountryMap[$lang]) > 1) {
                         $name .= " ($country)";
+                    }
 
                     $list[$locale] = [
-                        "url" => $url,
-                        "name" => $name,
+                        "url"       => $url,
+                        "name"      => $name,
                         "isCurrent" => $locale === $this->localeService->getLocale()
                     ];
                 }
             }
 
-            if (class_exists("Collator"))
-            {
+            if (class_exists("Collator")) {
                 $collator = new \Collator($this->localeService->getLocale());
-                usort($list, function($elem1, $elem2) use ($collator) {
+                usort($list, function ($elem1, $elem2) use ($collator) {
                     return $collator->compare($elem1["name"], $elem2["name"]);
                 });
             }
@@ -105,13 +103,10 @@ class PageContentExtension extends \Twig_Extension
 
     private function sortList($list)
     {
-        if (class_exists("Collator"))
-        {
+        if (class_exists("Collator")) {
             $collator = new \Collator($this->localeService->getLocale());
             $collator->asort($list);
-        }
-        else
-        {
+        } else {
             asort($list);
         }
 

@@ -1,23 +1,22 @@
 <?php
-/**
+
+/*
  * @package    agitation/page-bundle
- * @link       http://github.com/agitation/AgitPageBundle
- * @author     Alex Günsche <http://www.agitsol.com/>
- * @copyright  2012-2015 AGITsol GmbH
+ * @link       http://github.com/agitation/page-bundle
+ * @author     Alexander Günsche
  * @license    http://opensource.org/licenses/MIT
  */
 
 namespace Agit\PageBundle\Plugin;
 
 use Agit\BaseBundle\Exception\InternalErrorException;
-use Agit\BaseBundle\Pluggable\ServiceAwarePluginTrait;
-use Agit\BaseBundle\Pluggable\ServiceAwarePluginInterface;
-use Agit\PageBundle\TwigMeta\PageConfigNode;
-use Agit\BaseBundle\Pluggable\Depends;
 use Agit\BaseBundle\Pluggable\Cache\CacheEntry;
 use Agit\BaseBundle\Pluggable\Cache\CachePlugin;
 use Agit\BaseBundle\Pluggable\Cache\CachePluginInterface;
-
+use Agit\BaseBundle\Pluggable\Depends;
+use Agit\BaseBundle\Pluggable\ServiceAwarePluginInterface;
+use Agit\BaseBundle\Pluggable\ServiceAwarePluginTrait;
+use Agit\PageBundle\TwigMeta\PageConfigNode;
 
 /**
  * @CachePlugin(tag="agit.pages")
@@ -41,15 +40,12 @@ final class PagePlugin implements CachePluginInterface, ServiceAwarePluginInterf
     {
         $fileCollector = $this->getService('agit.common.filecollector');
 
-        foreach ($this->getService("kernel")->getBundles() as $alias => $bundle)
-        {
-            foreach ($this->availableTypes as $type => $subdir)
-            {
+        foreach ($this->getService("kernel")->getBundles() as $alias => $bundle) {
+            foreach ($this->availableTypes as $type => $subdir) {
                 $extension = "html.twig";
                 $basePath = $fileCollector->resolve("$alias:Resources:views:$subdir");
 
-                foreach ($fileCollector->collect($basePath, $extension) as $pagePath)
-                {
+                foreach ($fileCollector->collect($basePath, $extension) as $pagePath) {
                     $cacheEntry = new CacheEntry();
                     $data = $this->getData($type, $subdir, $basePath, $pagePath, $extension);
 
@@ -79,21 +75,23 @@ final class PagePlugin implements CachePluginInterface, ServiceAwarePluginInterf
 
         $config = $this->getConfigFromTemplate($pagePath);
 
-        if (!isset($config['capability']))
+        if (! isset($config['capability'])) {
             throw new InternalErrorException("Template {$data['template']} does not define capabilities.");
+        }
 
-        $data['caps'] = (string)$config['capability'];
+        $data['caps'] = (string) $config['capability'];
 
         $data['pageId'] = $this->makePageId($data['vPath']); // NOTE: The page ID is unique only within its page set.
-        $data['status'] = isset($config['status']) ? (int)$config['status'] : 200;
+        $data['status'] = isset($config['status']) ? (int) $config['status'] : 200;
 
         $twigTemplate = $this->getService('twig')->loadTemplate($data['template']);
-        $hasParent = (bool)$twigTemplate->getParent([]);
-        $data['isVirtual'] = !$hasParent; // a rather simple convention, but should be ok for our scenarios
+        $hasParent = (bool) $twigTemplate->getParent([]);
+        $data['isVirtual'] = ! $hasParent; // a rather simple convention, but should be ok for our scenarios
         $data['name'] = $twigTemplate->renderBlock('title', []);
 
-        if ($data['isVirtual'])
+        if ($data['isVirtual']) {
             unset($data['template'], $data['pageId']);
+        }
 
         return $data;
     }
@@ -102,13 +100,13 @@ final class PagePlugin implements CachePluginInterface, ServiceAwarePluginInterf
     {
         $parts = preg_split('|/+|', $page, null, PREG_SPLIT_NO_EMPTY);
 
-        $parts = array_map(function($part) {
+        $parts = array_map(function ($part) {
             // if the first part is numeric, it is for ordering and must be chopped off
             return preg_replace('|^\d{1,3}\.|', '', $part);
         }, $parts);
 
-        $parts = array_filter($parts, function($part) {
-            return ($part !== 'index' && $part !== '');
+        $parts = array_filter($parts, function ($part) {
+            return $part !== 'index' && $part !== '';
         });
 
         return '/' . implode('/', $parts);
@@ -124,16 +122,17 @@ final class PagePlugin implements CachePluginInterface, ServiceAwarePluginInterf
         $pos = 0;
         $parts = preg_split('|/+|', $page, null, PREG_SPLIT_NO_EMPTY);
 
-        if (count($parts))
-        {
+        if (count($parts)) {
             $last = array_pop($parts);
 
             // when it's an index page, then the order must be determined via the parent directory.
-            if ($last === 'index' && count($parts))
+            if ($last === 'index' && count($parts)) {
                 $last = array_pop($parts);
+            }
 
-            if (preg_match('|^(\d{1,3})\.|', $last, $matches) && is_array($matches) && isset($matches[1]))
-                $pos = (int)$matches[1];
+            if (preg_match('|^(\d{1,3})\.|', $last, $matches) && is_array($matches) && isset($matches[1])) {
+                $pos = (int) $matches[1];
+            }
         }
 
         return $pos;
@@ -147,8 +146,9 @@ final class PagePlugin implements CachePluginInterface, ServiceAwarePluginInterf
         $pathParts = array_map('ucfirst', $pathParts);
         $pageFilename .= implode('', $pathParts);
 
-        if ($pageFilename === '')
+        if ($pageFilename === '') {
             $pageFilename = 'index';
+        }
 
         return $pageFilename;
     }
@@ -165,12 +165,11 @@ final class PagePlugin implements CachePluginInterface, ServiceAwarePluginInterf
     {
         $config = [];
 
-        foreach ($node->getIterator() as $childNode)
-        {
-            if ($childNode instanceof \Twig_Node)
-            {
-                if ($childNode instanceof PageConfigNode)
+        foreach ($node->getIterator() as $childNode) {
+            if ($childNode instanceof \Twig_Node) {
+                if ($childNode instanceof PageConfigNode) {
                     $config += $childNode->getConfigValues();
+                }
 
                 $config += $this->findConfigInNode($childNode);
             }

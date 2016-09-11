@@ -1,9 +1,9 @@
 <?php
-/**
+
+/*
  * @package    agitation/page-bundle
- * @link       http://github.com/agitation/AgitPageBundle
- * @author     Alex Günsche <http://www.agitsol.com/>
- * @copyright  2012-2015 AGITsol GmbH
+ * @link       http://github.com/agitation/page-bundle
+ * @author     Alexander Günsche
  * @license    http://opensource.org/licenses/MIT
  */
 

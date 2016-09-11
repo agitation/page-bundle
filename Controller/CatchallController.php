@@ -1,9 +1,9 @@
 <?php
-/**
+
+/*
  * @package    agitation/page-bundle
- * @link       http://github.com/agitation/AgitPageBundle
- * @author     Alex Günsche <http://www.agitsol.com/>
- * @copyright  2012-2015 AGITsol GmbH
+ * @link       http://github.com/agitation/page-bundle
+ * @author     Alexander Günsche
  * @license    http://opensource.org/licenses/MIT
  */
 
@@ -30,14 +30,11 @@ class CatchallController extends Controller
         // now set the real locale as requested via URL
         $localeService->setLocale($reqDetails['locale']);
 
-        if (isset($reqDetails['canonical']) && $path !== $reqDetails['canonical'])
-        {
+        if (isset($reqDetails['canonical']) && $path !== $reqDetails['canonical']) {
             parse_str($request->getQueryString(), $query);
             $redirectUrl = $pageService->createUrl($reqDetails['canonical'], '', $query);
             $response = $pageService->createRedirectResponse($redirectUrl, 301);
-        }
-        else
-        {
+        } else {
             $pageDetails = $pageService->loadPage($reqDetails['vPath']);
             $response = $this->createResponse($pageDetails, $reqDetails);
         }
@@ -50,11 +47,10 @@ class CatchallController extends Controller
         $variables = [
             'pageId' => $pageDetails['pageId'],
             'locale' => $reqDetails['locale'],
-            'vPath' => $reqDetails['vPath']
+            'vPath'  => $reqDetails['vPath']
         ];
 
-        if (isset($reqDetails['localeUrls']) && isset($reqDetails['localeUrls'][$reqDetails['locale']]))
-        {
+        if (isset($reqDetails['localeUrls']) && isset($reqDetails['localeUrls'][$reqDetails['locale']])) {
             $variables['localeUrls'] = $reqDetails['localeUrls'];
             $variables['canonicalUrl'] = $reqDetails['localeUrls'][$reqDetails['locale']];
         }
