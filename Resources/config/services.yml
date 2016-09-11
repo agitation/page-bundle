@@ -1,26 +1,26 @@
 services:
-
     agit.page:
         class: Agit\PageBundle\Service\PageService
-        arguments: [ @agit.pluggable.cache.loader_factory, @agit.common.url, @agit.intl.locale, @?agit.user ]
-        tags: [{ name: agit.pluggable, type: cache, tag: agit.pages, baseClass: Agit\PageBundle\Plugin\PagePlugin }]
+        arguments: [ "@agit.common.cache.persistent", "@agit.common.url", "@agit.intl.locale", "agit.pages", "@?agit.user" ]
+
+    agit.page.collector:
+        class: Agit\PageBundle\Service\PageCollector
+        arguments: [ "@agit.common.cache.persistent", "@kernel", "@agit.common.filecollector", "@twig", "agit.pages" ]
+        tags: [{ name: kernel.cache_warmer }]
 
     # Handles our custom Twig syntax for the page meta data
     agit.page.custom:
         class: Agit\PageBundle\TwigMeta\PageConfigTokenExtension
-        tags:
-            - { name: twig.extension }
+        tags: [{ name: twig.extension }]
 
     # misc template functions
     agit.page.pagecontent:
         class: Agit\PageBundle\Twig\PageContentExtension
-        tags:
-            - { name: twig.extension }
-        arguments:  [ @agit.page, @agit.intl.locale, @?agit.localedata.language ]
+        tags: [{ name: twig.extension }]
+        arguments:  [ "@agit.page", "@agit.intl.locale", "@?agit.localedata.language" ]
 
     # page navigation functions
     agit.page.pagenavigation:
         class: Agit\PageBundle\Twig\PageNavigationExtension
-        tags:
-            - { name: twig.extension }
-        arguments:  [@agit.page]
+        tags: [{ name: twig.extension }]
+        arguments:  [ "@agit.page" ]

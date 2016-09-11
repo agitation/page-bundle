@@ -10,19 +10,17 @@
 namespace Agit\PageBundle\Service;
 
 use Agit\BaseBundle\Exception\InternalErrorException;
-use Agit\BaseBundle\Pluggable\Cache\CacheLoaderFactory;
 use Agit\BaseBundle\Service\UrlService;
 use Agit\IntlBundle\Service\LocaleService;
 use Agit\UserBundle\Service\UserService;
+use Doctrine\Common\Cache\Cache;
 use Symfony\Component\HttpFoundation\Response;
 
 class PageService
 {
+    private $pages;
+
     private $urlService;
-
-    private $userService;
-
-    private $pages = [];
 
     private $primaryLocale;
 
@@ -30,15 +28,16 @@ class PageService
 
     private $activeLocales;
 
-    public function __construct(CacheLoaderFactory $cacheLoaderFactory, UrlService $urlService, LocaleService $localeService, UserService $userService = null)
+    private $userService;
+
+    public function __construct(Cache $cache, UrlService $urlService, LocaleService $localeService, $cacheKey, UserService $userService = null)
     {
-        $this->userService = $userService;
+        $this->pages = $cache->fetch($cacheKey) ?: [];
         $this->urlService = $urlService;
         $this->primaryLocale = $localeService->getPrimaryLocale();
         $this->currentLocale = $localeService->getLocale();
         $this->activeLocales = $localeService->getActiveLocales();
-
-        $this->pages = $cacheLoaderFactory->create("agit.pages")->load();
+        $this->userService = $userService;
     }
 
     public function parseRequest($request)
