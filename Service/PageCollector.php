@@ -62,7 +62,7 @@ final class PageCollector implements CacheWarmerInterface
      */
     public function isOptional()
     {
-        return false;
+        return true;
     }
 
     public function collect()
