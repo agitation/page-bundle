@@ -28,6 +28,8 @@ use Twig_Node;
  */
 final class PageCollector implements CacheWarmerInterface
 {
+    const FILE_EXTENSION = "html.twig";
+
     private $availableTypes = ["page" => "Page", "special" => "Special"];
 
     private $cache;
@@ -68,14 +70,23 @@ final class PageCollector implements CacheWarmerInterface
     public function collect()
     {
         $pages = [];
+        $viewsPaths = [];
 
         foreach ($this->kernel->getBundles() as $alias => $bundle) {
-            foreach ($this->availableTypes as $type => $subdir) {
-                $extension = "html.twig";
-                $basePath = $this->fileCollector->resolve("$alias:Resources:views:$subdir");
+            $viewsPaths[] = $this->fileCollector->resolve("$alias:Resources:views");
+        }
 
-                foreach ($this->fileCollector->collect($basePath, $extension) as $pagePath) {
-                    $data = $this->getData($type, $subdir, $basePath, $pagePath, $extension);
+        $viewsPaths[] = $this->kernel->getRootDir() . "/Resources/views";
+        $viewsPaths = array_filter($viewsPaths);
+
+        foreach ($viewsPaths as $viewsPath) {
+            foreach ($this->availableTypes as $type => $subdir) {
+                $path = "$viewsPath/$subdir";
+
+                if (!is_dir($path)) continue;
+
+                foreach ($this->fileCollector->collect($path, self::FILE_EXTENSION) as $pagePath) {
+                    $data = $this->getData($type, $subdir, $path, $pagePath, self::FILE_EXTENSION);
                     $pages[$data["vPath"]] = $data;
                 }
             }
