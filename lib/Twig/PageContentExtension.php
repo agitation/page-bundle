@@ -12,6 +12,8 @@ namespace Agit\PageBundle\Twig;
 use Agit\IntlBundle\Service\LocaleService;
 use Agit\LocaleDataBundle\Entity\LanguageRepository;
 use Agit\PageBundle\Service\PageService;
+use Collator;
+use Twig_SimpleFunction;
 
 class PageContentExtension extends \Twig_Extension
 {
@@ -36,8 +38,8 @@ class PageContentExtension extends \Twig_Extension
     public function getFunctions()
     {
         return [
-            new \Twig_SimpleFunction("createUrl", [$this, "createUrl"], ["is_safe" => ["all"]]),
-            new \Twig_SimpleFunction("getPageLocaleUrls", [$this, "getPageLocaleUrls"], ["needs_context" => true, "is_safe" => ["all"]])
+            new Twig_SimpleFunction("createUrl", [$this, "createUrl"], ["is_safe" => ["all"]]),
+            new Twig_SimpleFunction("getPageLocaleUrls", [$this, "getPageLocaleUrls"], ["needs_context" => true, "is_safe" => ["all"]])
         ];
     }
 
@@ -91,7 +93,7 @@ class PageContentExtension extends \Twig_Extension
             }
 
             if (class_exists("Collator")) {
-                $collator = new \Collator($this->localeService->getLocale());
+                $collator = new Collator($this->localeService->getLocale());
                 usort($list, function ($elem1, $elem2) use ($collator) {
                     return $collator->compare($elem1["name"], $elem2["name"]);
                 });

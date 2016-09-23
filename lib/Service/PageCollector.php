@@ -93,7 +93,9 @@ final class PageCollector implements CacheWarmerInterface
             foreach ($this->availableTypes as $type => $subdir) {
                 $path = "$viewsPath/$subdir";
 
-                if (!is_dir($path)) continue;
+                if (! is_dir($path)) {
+                    continue;
+                }
 
                 foreach ($this->fileCollector->collect($path, self::FILE_EXTENSION) as $pagePath) {
                     $data = $this->getData($type, $subdir, $path, $pagePath, self::FILE_EXTENSION);
@@ -132,15 +134,13 @@ final class PageCollector implements CacheWarmerInterface
         $data["isVirtual"] = ! $hasParent; // a rather simple convention, but should be ok for our scenarios
         $data["names"] = []; // i18n
 
-        foreach ($this->availableLocales as $locale)
-        {
+        foreach ($this->availableLocales as $locale) {
             $this->localeService->setLocale($locale);
             $data["names"][$locale] = $twigTemplate->renderBlock("title", []);
         }
 
         $this->localeService->setLocale($this->defaultLocale);
         $data["name"] = $twigTemplate->renderBlock("title", []);
-
 
         if ($data["isVirtual"]) {
             unset($data["template"], $data["pageId"]);
