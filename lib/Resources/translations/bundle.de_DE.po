@@ -18,7 +18,7 @@ msgstr "Bitte loggen Sie sich ein, um Zugriff auf diese Seite zu erhalten."
 
 #: @AgitPageBundle/Resources/views/Special/unauthorized.html.twig:42
 msgid "Unauthorized"
-msgstr ""
+msgstr "Nicht autorisiert"
 
 #: @AgitPageBundle/Resources/views/Special/notfound.html.twig:28
 msgid "The requested page could not be found. Please check the spelling of the address, or notify the owner of the referring web page."
@@ -26,4 +26,4 @@ msgstr "Die gewünschte Seite wurde nicht gefunden. Bitte prüfen Sie die Schrei
 
 #: @AgitPageBundle/Resources/views/Special/notfound.html.twig:42
 msgid "Page not found"
-msgstr ""
+msgstr "Seite nicht gefunden"
