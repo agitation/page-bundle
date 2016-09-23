@@ -5,7 +5,7 @@ services:
 
     agit.page.collector:
         class: Agit\PageBundle\Service\PageCollector
-        arguments: [ "@agit.common.cache.persistent", "@kernel", "@agit.common.filecollector", "@twig", "agit.pages" ]
+        arguments: [ "@agit.common.cache.persistent", "@kernel", "@agit.common.filecollector", "@agit.intl.locale", "@twig", "agit.pages" ]
         tags: [{ name: kernel.cache_warmer }]
 
     # Handles our custom Twig syntax for the page meta data

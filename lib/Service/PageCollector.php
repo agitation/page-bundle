@@ -11,6 +11,7 @@ namespace Agit\PageBundle\Service;
 
 use Agit\BaseBundle\Exception\InternalErrorException;
 use Agit\BaseBundle\Service\FileCollector;
+use Agit\IntlBundle\Service\LocaleService;
 use Agit\PageBundle\TwigMeta\PageConfigNode;
 use Doctrine\Common\Cache\Cache;
 use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerInterface;
@@ -38,17 +39,26 @@ final class PageCollector implements CacheWarmerInterface
 
     private $fileCollector;
 
+    private $localeService;
+
     private $twig;
 
     private $cacheKey;
 
-    public function __construct(Cache $cache, Kernel $kernel, FileCollector $fileCollector, Twig_Environment $twig, $cacheKey)
+    private $defaultLocale;
+
+    private $availableLocales;
+
+    public function __construct(Cache $cache, Kernel $kernel, FileCollector $fileCollector, LocaleService $localeService, Twig_Environment $twig, $cacheKey)
     {
         $this->cache = $cache;
         $this->kernel = $kernel;
         $this->fileCollector = $fileCollector;
+        $this->localeService = $localeService;
         $this->twig = $twig;
         $this->cacheKey = $cacheKey;
+        $this->defaultLocale = $localeService->getDefaultLocale();
+        $this->availableLocales = $localeService->getAvailableLocales();
     }
 
     /**
@@ -120,7 +130,17 @@ final class PageCollector implements CacheWarmerInterface
         $twigTemplate = $this->twig->loadTemplate($data["template"]);
         $hasParent = (bool) $twigTemplate->getParent([]);
         $data["isVirtual"] = ! $hasParent; // a rather simple convention, but should be ok for our scenarios
+        $data["names"] = []; // i18n
+
+        foreach ($this->availableLocales as $locale)
+        {
+            $this->localeService->setLocale($locale);
+            $data["names"][$locale] = $twigTemplate->renderBlock("title", []);
+        }
+
+        $this->localeService->setLocale($this->defaultLocale);
         $data["name"] = $twigTemplate->renderBlock("title", []);
+
 
         if ($data["isVirtual"]) {
             unset($data["template"], $data["pageId"]);
