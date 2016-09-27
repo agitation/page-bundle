@@ -12,9 +12,14 @@ namespace Agit\PageBundle\Service;
 use Agit\BaseBundle\Exception\InternalErrorException;
 use Agit\BaseBundle\Service\UrlService;
 use Agit\IntlBundle\Service\LocaleService;
+use Agit\IntlBundle\Service\LocaleConfigService;
 use Agit\UserBundle\Service\UserService;
 use Doctrine\Common\Cache\Cache;
 use Symfony\Component\HttpFoundation\Response;
+
+// NOTE: The language which comes first in %agit.intl.locales% is the one that
+// will show when a page is called without language suffix. Modify the order of
+// locales in %agit.intl.locales% in order to set a different language as default.
 
 class PageService
 {
@@ -30,13 +35,13 @@ class PageService
 
     private $userService;
 
-    public function __construct(Cache $cache, UrlService $urlService, LocaleService $localeService, $cacheKey, UserService $userService = null)
+    public function __construct(Cache $cache, UrlService $urlService, LocaleService $localeService, LocaleConfigService $localeConfigService, $cacheKey, UserService $userService = null)
     {
         $this->pages = $cache->fetch($cacheKey) ?: [];
         $this->urlService = $urlService;
-        $this->primaryLocale = $localeService->getPrimaryLocale();
         $this->currentLocale = $localeService->getLocale();
-        $this->activeLocales = $localeService->getActiveLocales();
+        $this->activeLocales = $localeConfigService->getActiveLocales();
+        $this->primaryLocale = reset($this->activeLocales);
         $this->userService = $userService;
     }
 

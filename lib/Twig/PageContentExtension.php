@@ -10,6 +10,7 @@
 namespace Agit\PageBundle\Twig;
 
 use Agit\IntlBundle\Service\LocaleService;
+use Agit\IntlBundle\Service\LocaleConfigService;
 use Agit\LocaleDataBundle\Entity\LanguageRepository;
 use Agit\PageBundle\Service\PageService;
 use Collator;
@@ -21,12 +22,15 @@ class PageContentExtension extends \Twig_Extension
 
     private $localeService;
 
+    private $localeConfigService;
+
     private $languageRepository;
 
-    public function __construct(PageService $pageService, LocaleService $localeService, LanguageRepository $languageRepository = null)
+    public function __construct(PageService $pageService, LocaleService $localeService, LocaleConfigService $localeConfigService, LanguageRepository $languageRepository = null)
     {
         $this->pageService = $pageService;
         $this->localeService = $localeService;
+        $this->localeConfigService = $localeConfigService;
         $this->languageRepository = $languageRepository;
     }
 
@@ -54,7 +58,8 @@ class PageContentExtension extends \Twig_Extension
         $list = [];
 
         if (isset($context["localeUrls"]) && $this->languageRepository) {
-            $localeList = $this->localeService->getActiveLocales();
+
+            $localeList = $this->localeConfigService->getActiveLocales();
             $languageCountryMap = [];
 
             foreach ($localeList as $localeCode) {
@@ -71,6 +76,13 @@ class PageContentExtension extends \Twig_Extension
 
                 $languageCountryMap[$langCode][] = $countryCode;
             }
+
+            $langCodes = array_map(
+                function($locale){ return substr($locale, 0, 2); },
+                array_keys($context["localeUrls"])
+            );
+
+            $this->languageRepository->findBy(["id" => $langCodes]); // preloading, to reduce no. of DB queries
 
             foreach ($context["localeUrls"] as $locale => $url) {
                 $lang = substr($locale, 0, 2);
@@ -92,12 +104,10 @@ class PageContentExtension extends \Twig_Extension
                 }
             }
 
-            if (class_exists("Collator")) {
-                $collator = new Collator($this->localeService->getLocale());
-                usort($list, function ($elem1, $elem2) use ($collator) {
-                    return $collator->compare($elem1["name"], $elem2["name"]);
-                });
-            }
+            $collator = new Collator($this->localeService->getLocale());
+            usort($list, function ($elem1, $elem2) use ($collator) {
+                return $collator->compare($elem1["name"], $elem2["name"]);
+            });
         }
 
         return $list;
@@ -105,13 +115,8 @@ class PageContentExtension extends \Twig_Extension
 
     private function sortList($list)
     {
-        if (class_exists("Collator")) {
-            $collator = new \Collator($this->localeService->getLocale());
-            $collator->asort($list);
-        } else {
-            asort($list);
-        }
-
+        $collator = new Collator($this->localeService->getLocale());
+        $collator->asort($list);
         return $list;
     }
 }

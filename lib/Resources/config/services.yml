@@ -1,7 +1,7 @@
 services:
     agit.page:
         class: Agit\PageBundle\Service\PageService
-        arguments: [ "@agit.common.cache.persistent", "@agit.common.url", "@agit.intl.locale", "agit.pages", "@?agit.user" ]
+        arguments: [ "@agit.common.cache.persistent", "@agit.common.url", "@agit.intl.locale", "@agit.intl.config", "agit.pages", "@?agit.user" ]
 
     agit.page.collector:
         class: Agit\PageBundle\Service\PageCollector
@@ -17,7 +17,7 @@ services:
     agit.page.pagecontent:
         class: Agit\PageBundle\Twig\PageContentExtension
         tags: [{ name: twig.extension }]
-        arguments:  [ "@agit.page", "@agit.intl.locale", "@?agit.localedata.language" ]
+        arguments:  [ "@agit.page", "@agit.intl.locale", "@agit.intl.config", "@?agit.localedata.language" ]
 
     # page navigation functions
     agit.page.pagenavigation:
