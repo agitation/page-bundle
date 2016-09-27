@@ -136,11 +136,11 @@ final class PageCollector implements CacheWarmerInterface
 
         foreach ($this->availableLocales as $locale) {
             $this->localeService->setLocale($locale);
-            $data["names"][$locale] = $twigTemplate->renderBlock("title", []);
+            $data["names"][$locale] = $twigTemplate->renderBlock("name", []);
         }
 
         $this->localeService->setLocale($this->defaultLocale);
-        $data["name"] = $twigTemplate->renderBlock("title", []);
+        $data["name"] = $twigTemplate->renderBlock("name", []);
 
         if ($data["isVirtual"]) {
             unset($data["template"], $data["pageId"]);
