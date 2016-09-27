@@ -40,6 +40,7 @@ class PageService
         $this->pages = $cache->fetch($cacheKey) ?: [];
         $this->urlService = $urlService;
         $this->currentLocale = $localeService->getLocale();
+        $this->availableLocales = $localeService->getAvailableLocales();
         $this->activeLocales = $localeConfigService->getActiveLocales();
         $this->primaryLocale = reset($this->activeLocales);
         $this->userService = $userService;
@@ -50,6 +51,7 @@ class PageService
         $reqParts = preg_split("|/+|", $request, null, PREG_SPLIT_NO_EMPTY);
         $lang = end($reqParts);
         $locale = $this->getLocaleFromLangId($lang);
+
         if ($locale) {
             array_pop($reqParts);
         }
@@ -172,9 +174,9 @@ class PageService
         $locale = null;
 
         if (is_string($string) && strlen($string) === 2) {
-            foreach ($this->activeLocales as $activeLocale) {
-                if (substr($activeLocale, 0, 2) === $string) {
-                    $locale = $activeLocale;
+            foreach ($this->availableLocales as $availableLocale) {
+                if (substr($availableLocale, 0, 2) === $string) {
+                    $locale = $availableLocale;
                     break;
                 }
             }
