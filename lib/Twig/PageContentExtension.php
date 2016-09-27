@@ -9,8 +9,8 @@
 
 namespace Agit\PageBundle\Twig;
 
-use Agit\IntlBundle\Service\LocaleService;
 use Agit\IntlBundle\Service\LocaleConfigService;
+use Agit\IntlBundle\Service\LocaleService;
 use Agit\LocaleDataBundle\Entity\LanguageRepository;
 use Agit\PageBundle\Service\PageService;
 use Collator;
@@ -58,7 +58,6 @@ class PageContentExtension extends \Twig_Extension
         $list = [];
 
         if (isset($context["localeUrls"]) && $this->languageRepository) {
-
             $localeList = $this->localeConfigService->getActiveLocales();
             $languageCountryMap = [];
 
@@ -78,7 +77,7 @@ class PageContentExtension extends \Twig_Extension
             }
 
             $langCodes = array_map(
-                function($locale){ return substr($locale, 0, 2); },
+                function ($locale) { return substr($locale, 0, 2); },
                 array_keys($context["localeUrls"])
             );
 
@@ -117,6 +116,7 @@ class PageContentExtension extends \Twig_Extension
     {
         $collator = new Collator($this->localeService->getLocale());
         $collator->asort($list);
+
         return $list;
     }
 }

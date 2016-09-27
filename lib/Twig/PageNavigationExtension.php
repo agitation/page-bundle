@@ -10,8 +10,10 @@
 namespace Agit\PageBundle\Twig;
 
 use Agit\PageBundle\Service\PageService;
+use Twig_Extension;
+use Twig_SimpleFunction;
 
-class PageNavigationExtension extends \Twig_Extension
+class PageNavigationExtension extends Twig_Extension
 {
     private $pageService;
 
@@ -32,11 +34,12 @@ class PageNavigationExtension extends \Twig_Extension
     public function getFunctions()
     {
         return [
-            new \Twig_SimpleFunction("getPageTree", [$this, "getPageTree"]),
-            new \Twig_SimpleFunction("hasPrev", [$this, "hasPrev"],  ["needs_context" => true]),
-            new \Twig_SimpleFunction("hasNext", [$this, "hasNext"],  ["needs_context" => true]),
-            new \Twig_SimpleFunction("getPrev", [$this, "getPrev"],  ["needs_context" => true]),
-            new \Twig_SimpleFunction("getNext", [$this, "getNext"],  ["needs_context" => true])
+            new Twig_SimpleFunction("getPageTree", [$this, "getPageTree"]),
+            new Twig_SimpleFunction("breadcrumb", [$this, "breadcrumb"],  ["needs_context" => true]),
+            new Twig_SimpleFunction("hasPrev", [$this, "hasPrev"],  ["needs_context" => true]),
+            new Twig_SimpleFunction("hasNext", [$this, "hasNext"],  ["needs_context" => true]),
+            new Twig_SimpleFunction("getPrev", [$this, "getPrev"],  ["needs_context" => true]),
+            new Twig_SimpleFunction("getNext", [$this, "getNext"],  ["needs_context" => true])
         ];
     }
 
@@ -46,6 +49,33 @@ class PageNavigationExtension extends \Twig_Extension
         $this->sortTree($tree);
 
         return $tree;
+    }
+
+    public function breadcrumb($context, $base, $withLinks = false)
+    {
+        $locale = $context["locale"];
+        $breadcrumb = [];
+        $path = "";
+        $pathParts = preg_split("|/+|", $context["vPath"], null, PREG_SPLIT_NO_EMPTY);
+
+        foreach ($pathParts as $pathPart) {
+            $path .= "/$pathPart";
+
+            if (strpos($path, $base) !== 0) {
+                continue;
+            }
+
+            $page = $this->pageService->getPage($path);
+
+            $url = $this->pageService->createUrl($page["vPath"], $locale);
+            $name = isset($page["names"][$locale]) ? $page["names"][$locale] : $page["name"];
+
+            $breadcrumb[] = $withLinks
+                ? sprintf("<a href='%s'>%s</a>", $url, $name)
+                : $name;
+        }
+
+        return implode(" › ", $breadcrumb);
     }
 
     public function hasPrev($context)

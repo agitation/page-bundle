@@ -11,8 +11,8 @@ namespace Agit\PageBundle\Service;
 
 use Agit\BaseBundle\Exception\InternalErrorException;
 use Agit\BaseBundle\Service\UrlService;
-use Agit\IntlBundle\Service\LocaleService;
 use Agit\IntlBundle\Service\LocaleConfigService;
+use Agit\IntlBundle\Service\LocaleService;
 use Agit\UserBundle\Service\UserService;
 use Doctrine\Common\Cache\Cache;
 use Symfony\Component\HttpFoundation\Response;
