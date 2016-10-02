@@ -9,6 +9,7 @@
 
 namespace Agit\PageBundle\Controller;
 
+use Agit\PageBundle\Event\PageRequestEvent;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -38,6 +39,11 @@ class CatchallController extends Controller
             $pageDetails = $pageService->loadPage($reqDetails['vPath']);
             $response = $this->createResponse($pageDetails, $reqDetails);
         }
+
+        $this->get("event_dispatcher")->dispatch(
+            "agit.page.request",
+            new PageRequestEvent($request, $response, $pageDetails, $reqDetails)
+        );
 
         return $response;
     }
