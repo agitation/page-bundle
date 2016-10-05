@@ -20,29 +20,30 @@ class CatchallController extends Controller
         $path = "/$path"; // for consistency
         $response = null;
 
-        $pageService = $this->get('agit.page');
-        $localeService = $this->get('agit.intl.locale');
+        $pageService = $this->get("agit.page");
+        $localeService = $this->get("agit.intl.locale");
 
-        // we'll try to provide error messages in the UA's language until the real locale is set
+        // we’ll try to provide error messages in the UA’s language until the real locale is set
         $localeService->setLocale($localeService->getUserLocale());
 
         $reqDetails = $pageService->parseRequest($path);
+        $pageDetails = null;
 
         // now set the real locale as requested via URL
-        $localeService->setLocale($reqDetails['locale']);
+        $localeService->setLocale($reqDetails["locale"]);
 
-        if (isset($reqDetails['canonical']) && $path !== $reqDetails['canonical']) {
+        if (isset($reqDetails["canonical"]) && $path !== $reqDetails["canonical"]) {
             parse_str($request->getQueryString(), $query);
-            $redirectUrl = $pageService->createUrl($reqDetails['canonical'], '', $query);
+            $redirectUrl = $pageService->createUrl($reqDetails["canonical"], "", $query);
             $response = $pageService->createRedirectResponse($redirectUrl, 301);
         } else {
-            $pageDetails = $pageService->loadPage($reqDetails['vPath']);
+            $pageDetails = $pageService->loadPage($reqDetails["vPath"]);
             $response = $this->createResponse($pageDetails, $reqDetails);
         }
 
         $this->get("event_dispatcher")->dispatch(
             "agit.page.request",
-            new PageRequestEvent($request, $response, $pageDetails, $reqDetails)
+            new PageRequestEvent($request, $response, $reqDetails, $pageDetails)
         );
 
         return $response;
@@ -51,23 +52,23 @@ class CatchallController extends Controller
     private function createResponse($pageDetails, $reqDetails)
     {
         $variables = [
-            'pageId' => $pageDetails['pageId'],
-            'locale' => $reqDetails['locale'],
-            'vPath'  => $reqDetails['vPath']
+            "pageId" => $pageDetails["pageId"],
+            "locale" => $reqDetails["locale"],
+            "vPath"  => $reqDetails["vPath"]
         ];
 
-        if (isset($reqDetails['localeUrls']) && isset($reqDetails['localeUrls'][$reqDetails['locale']])) {
-            $variables['localeUrls'] = $reqDetails['localeUrls'];
-            $variables['canonicalUrl'] = $reqDetails['localeUrls'][$reqDetails['locale']];
+        if (isset($reqDetails["localeUrls"]) && isset($reqDetails["localeUrls"][$reqDetails["locale"]])) {
+            $variables["localeUrls"] = $reqDetails["localeUrls"];
+            $variables["canonicalUrl"] = $reqDetails["localeUrls"][$reqDetails["locale"]];
         }
 
-        $response = $this->render($pageDetails['template'], $variables);
+        $response = $this->render($pageDetails["template"], $variables);
 
         $response->headers->set("X-Frame-Options", "SAMEORIGIN");
         $response->headers->set("Cache-Control", "no-cache, must-revalidate, max-age=0", true);
         $response->headers->set("Pragma", "no-store", true);
         $response->headers->set("X-Content-Type-Options", "nosniff", true);
-        $response->setStatusCode($pageDetails['status']);
+        $response->setStatusCode($pageDetails["status"]);
 
         return $response;
     }

@@ -12,16 +12,16 @@ class PageRequestEvent extends Event
 
     private $response;
 
-    private $pageDetails;
-
     private $reqDetails;
 
-    public function __construct(Request $request, Response $response, $pageDetails, $reqDetails)
+    private $pageDetails;
+
+    public function __construct(Request $request, Response $response, $reqDetails, $pageDetails)
     {
         $this->request = $request;
         $this->response = $response;
-        $this->pageDetails = $pageDetails;
         $this->reqDetails = $reqDetails;
+        $this->pageDetails = $pageDetails;
     }
 
     public function getRequest()
@@ -34,13 +34,13 @@ class PageRequestEvent extends Event
         return $this->response;
     }
 
-    public function getPageDetails()
-    {
-        return $this->pageDetails;
-    }
-
     public function getReqDetails()
     {
         return $this->reqDetails;
+    }
+
+    public function getPageDetails()
+    {
+        return $this->pageDetails;
     }
 }
