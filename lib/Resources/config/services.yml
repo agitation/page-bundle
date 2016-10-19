@@ -13,14 +13,8 @@ services:
         class: Agit\PageBundle\TwigMeta\PageConfigTokenExtension
         tags: [{ name: twig.extension }]
 
-    # misc template functions
-    agit.page.pagecontent:
-        class: Agit\PageBundle\Twig\PageContentExtension
+    # page navigation functions
+    agit.page.navigation:
+        class: Agit\PageBundle\Service\NavigationExtension
         tags: [{ name: twig.extension }]
         arguments:  [ "@agit.page", "@agit.intl.locale", "@agit.intl.config", "@?agit.localedata.language" ]
-
-    # page navigation functions
-    agit.page.pagenavigation:
-        class: Agit\PageBundle\Twig\PageNavigationExtension
-        tags: [{ name: twig.extension }]
-        arguments:  [ "@agit.page" ]
