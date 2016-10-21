@@ -9,13 +9,12 @@
 
 namespace Agit\PageBundle\Service;
 
-use Twig_Extension;
-use Twig_SimpleFunction;
 use Agit\IntlBundle\Service\LocaleConfigService;
 use Agit\IntlBundle\Service\LocaleService;
 use Agit\LocaleDataBundle\Entity\LanguageRepository;
-use Agit\PageBundle\Service\PageService;
 use Collator;
+use Twig_Extension;
+use Twig_SimpleFunction;
 
 class NavigationExtension extends Twig_Extension
 {
@@ -73,6 +72,7 @@ class NavigationExtension extends Twig_Extension
     public function getPageUrls($base)
     {
         $tree = $this->getPageTree($base);
+
         return $this->getPages($tree, $this->localeService->getLocale());
     }
 
@@ -202,12 +202,9 @@ class NavigationExtension extends Twig_Extension
         foreach ($tree as $key => $value) {
             $name = isset($value["data"]["names"][$locale]) ? $value["data"]["names"][$locale] : $value["data"]["name"];
 
-            if (isset($value["children"]) && count($value["children"]))
-            {
+            if (isset($value["children"]) && count($value["children"])) {
                 $pages[$name] = $this->getPages($value["children"], $locale);
-            }
-            elseif (!$value["data"]["isVirtual"])
-            {
+            } elseif (! $value["data"]["isVirtual"]) {
                 $pages[$name] = $this->pageService->createUrl($value["data"]["vPath"], $locale);
             }
         }

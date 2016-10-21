@@ -1,10 +1,17 @@
 <?php
 
+/*
+ * @package    agitation/page-bundle
+ * @link       http://github.com/agitation/page-bundle
+ * @author     Alexander Günsche
+ * @license    http://opensource.org/licenses/MIT
+ */
+
 namespace Agit\PageBundle\Event;
 
+use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\EventDispatcher\Event;
 
 class PageRequestEvent extends Event
 {
