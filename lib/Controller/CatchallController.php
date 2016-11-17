@@ -11,7 +11,6 @@ namespace Agit\PageBundle\Controller;
 
 use Agit\IntlBundle\Tool\Translate;
 use Agit\PageBundle\Event\PageRequestEvent;
-use Agit\PageBundle\Exception\NotFoundException;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Debug\Exception\FlattenException;
@@ -25,8 +24,6 @@ class CatchallController extends Controller
         $reqDetails = $this->load($request);
         $pageDetails = null;
         $response = null;
-
-        throw new NotFoundException("foobaro");
 
         if (isset($reqDetails["canonical"]) && $request->getPathInfo() !== $reqDetails["canonical"]) {
             parse_str($request->getQueryString(), $query);
