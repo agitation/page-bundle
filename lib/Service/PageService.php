@@ -130,7 +130,7 @@ class PageService
         } else {
             $page = $this->getPage($vPath);
 
-            if ($page["isVirtual"]) {
+            if ($page["virtual"]) {
                 $page = $this->getPage("_notfound");
             } elseif ($page["caps"]) {
                 if (! $this->userService || ! $this->userService->getCurrentUser()) {

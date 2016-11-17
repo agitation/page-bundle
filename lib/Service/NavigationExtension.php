@@ -46,6 +46,8 @@ class NavigationExtension extends Twig_Extension
     public function getFunctions()
     {
         return [
+            new Twig_SimpleFunction("getPageName", [$this, "getPageName"], ["needs_context" => true, "is_safe" => ["all"]]),
+
             new Twig_SimpleFunction("getPageTree", [$this, "getPageTree"]),
 
             new Twig_SimpleFunction("getPageUrls", [$this, "getPageUrls"]),
@@ -59,6 +61,13 @@ class NavigationExtension extends Twig_Extension
             new Twig_SimpleFunction("getPrev", [$this, "getPrev"],  ["needs_context" => true]),
             new Twig_SimpleFunction("getNext", [$this, "getNext"],  ["needs_context" => true])
         ];
+    }
+
+    public function getPageName($context)
+    {
+        $page = $this->pageService->getPage($context["vPath"]);
+
+        return $page["names"][$context["locale"]];
     }
 
     public function getPageTree($base)
@@ -204,7 +213,7 @@ class NavigationExtension extends Twig_Extension
 
             if (isset($value["children"]) && count($value["children"])) {
                 $pages[$name] = $this->getPages($value["children"], $locale);
-            } elseif (! $value["data"]["isVirtual"]) {
+            } elseif (! $value["data"]["virtual"]) {
                 $pages[$name] = $this->pageService->createUrl($value["data"]["vPath"], $locale);
             }
         }

@@ -9,7 +9,9 @@
 
 namespace Agit\PageBundle\TwigMeta;
 
-class PageConfigTokenExtension extends \Twig_Extension
+use Twig_Extension;
+
+class PageConfigTokenExtension extends Twig_Extension
 {
     public function getTokenParsers()
     {
@@ -18,6 +20,6 @@ class PageConfigTokenExtension extends \Twig_Extension
 
     public function getName()
     {
-        return 'agit.ui.meta';
+        return "agit.page.meta";
     }
 }

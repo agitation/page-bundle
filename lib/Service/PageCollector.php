@@ -12,12 +12,15 @@ namespace Agit\PageBundle\Service;
 use Agit\BaseBundle\Exception\InternalErrorException;
 use Agit\BaseBundle\Service\FileCollector;
 use Agit\IntlBundle\Service\LocaleService;
+use Agit\PageBundle\Exception\InvalidConfigurationException;
 use Agit\PageBundle\TwigMeta\PageConfigNode;
 use Doctrine\Common\Cache\Cache;
 use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerInterface;
 use Symfony\Component\HttpKernel\Kernel;
+use Twig_Compiler;
 use Twig_Environment;
 use Twig_Node;
+use Twig_Node_Expression_Function;
 
 /**
  * This service walks through *all* bundles and searches the Resources/views
@@ -121,32 +124,59 @@ final class PageCollector implements CacheWarmerInterface
         $config = $this->getConfigFromTemplate($pagePath);
 
         if (! isset($config["capability"])) {
-            throw new InternalErrorException("Template {$data["template"]} does not define capabilities.");
+            throw new InternalErrorException(sprintf("Page `%s` does not define capabilities.", $data["template"]));
         }
 
-        $data["caps"] = (string) $config["capability"];
-
-        $data["pageId"] = $this->makePageId($data["vPath"]); // NOTE: The page ID is unique only within its page set.
-        $data["status"] = isset($config["status"]) ? (int) $config["status"] : 200;
+        $data["caps"] = $config["capability"];
+        $data["status"] = isset($config["status"]) ? $config["status"] : 200;
 
         $twigTemplate = $this->twig->loadTemplate($data["template"]);
         $hasParent = (bool) $twigTemplate->getParent([]);
-        $data["isVirtual"] = ! $hasParent; // a rather simple convention, but should be ok for our scenarios
-        $data["names"] = []; // i18n
+        $data["virtual"] = isset($config["virtual"]);
 
-        foreach ($this->availableLocales as $locale) {
-            $this->localeService->setLocale($locale);
-            $data["names"][$locale] = $twigTemplate->renderBlock("name", []);
+        if (! isset($config["name"])) {
+            throw new InvalidConfigurationException(sprintf("Page `%s` is missing the `agit.name` tag.", $data["template"]));
         }
 
-        $this->localeService->setLocale($this->defaultLocale);
-        $data["name"] = $twigTemplate->renderBlock("name", []);
+        $data["names"] = $this->getNames($config["name"]);
+        $data["name"] = $data["names"][$this->defaultLocale];
 
-        if ($data["isVirtual"]) {
-            unset($data["template"], $data["pageId"]);
+        if ($data["virtual"]) {
+            unset($data["template"]);
         }
 
         return $data;
+    }
+
+    protected function getNames($nameNode)
+    {
+        $names = [];
+
+        if ($nameNode instanceof Twig_Node_Expression_Function) {
+            $compiler = new Twig_Compiler($this->twig);
+            $function = $this->twig->getFunction($nameNode->getAttribute("name"));
+            $callable = $function->getCallable();
+            $args = [];
+
+            foreach ($nameNode->getNode("arguments") as $argNode) {
+                $args[] = $argNode->getAttribute("value");
+            }
+
+            foreach ($this->availableLocales as $locale) {
+                $this->localeService->setLocale($locale);
+                $names[$locale] = call_user_func_array($callable, $args);
+            }
+        } elseif (is_string($nameNode)) {
+            foreach ($this->availableLocales as $locale) {
+                $names[$locale] = $nameNode;
+            }
+        } else {
+            throw new InvalidConfigurationException("The value for `agit.name` must be either a string or a function expression.");
+        }
+
+        $this->localeService->setLocale($this->defaultLocale);
+
+        return $names;
     }
 
     protected function pageToVirtualPath($page)
@@ -189,21 +219,6 @@ final class PageCollector implements CacheWarmerInterface
         }
 
         return $pos;
-    }
-
-    private function makePageId($vPath)
-    {
-        $pageFilename = "";
-        $pathParts = explode("/", trim($vPath, "/_"));
-        $pageFilename .= array_shift($pathParts);
-        $pathParts = array_map("ucfirst", $pathParts);
-        $pageFilename .= implode("", $pathParts);
-
-        if ($pageFilename === "") {
-            $pageFilename = "index";
-        }
-
-        return $pageFilename;
     }
 
     private function getConfigFromTemplate($pagePath)

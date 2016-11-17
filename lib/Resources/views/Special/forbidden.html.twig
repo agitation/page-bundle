@@ -1,5 +1,5 @@
 {% agit.capability "" %}
-{% agit.status "403" %}
-{% block name %}{{ x("page title", "Forbidden") }}{% endblock %}
+{% agit.status 403 %}
+{% agit.name x("page title", "Forbidden") %}
 
 <p>{{ t('You are not allowed to access this page.') }}</p>
