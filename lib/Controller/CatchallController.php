@@ -9,7 +9,9 @@
 
 namespace Agit\PageBundle\Controller;
 
+use Agit\IntlBundle\Tool\Translate;
 use Agit\PageBundle\Event\PageRequestEvent;
+use Agit\PageBundle\Exception\NotFoundException;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Debug\Exception\FlattenException;
@@ -23,6 +25,8 @@ class CatchallController extends Controller
         $reqDetails = $this->load($request);
         $pageDetails = null;
         $response = null;
+
+        throw new NotFoundException("foobaro");
 
         if (isset($reqDetails["canonical"]) && $request->getPathInfo() !== $reqDetails["canonical"]) {
             parse_str($request->getQueryString(), $query);
@@ -43,18 +47,23 @@ class CatchallController extends Controller
 
     public function exceptionAction(Request $request, FlattenException $exception)
     {
+        $status = $exception->getStatusCode();
+        $message = $status && $status < 500
+            ? $exception->getMessage()
+            : Translate::t("Sorry, there has been an internal error. The administrators have been notified and will fix this as soon as possible.");
+
         try {
             $reqDetails = $this->load($request);
             $pageDetails = $this->get("agit.page")->getPage("_exception");
-            $response = $this->createResponse($pageDetails, $reqDetails, ["message" => $exception->getMessage()]);
+            $response = $this->createResponse($pageDetails, $reqDetails, ["message" => $message]);
         } catch (Exception $e) {
             $response = $this->render("AgitPageBundle:Special:exception.html.twig", [
                 "locale"  => "en_GB",
-                "message" => $exception->getMessage()
+                "message" => $message
             ]);
         }
 
-        $response->setStatusCode($exception->getStatusCode());
+        $response->setStatusCode($status);
         $response->headers->set("X-Frame-Options", "SAMEORIGIN");
 
         return $response;
