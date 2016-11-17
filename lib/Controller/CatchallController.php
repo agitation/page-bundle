@@ -10,29 +10,21 @@
 namespace Agit\PageBundle\Controller;
 
 use Agit\PageBundle\Event\PageRequestEvent;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Debug\Exception\FlattenException;
 use Symfony\Component\HttpFoundation\Request;
 
 class CatchallController extends Controller
 {
-    public function dispatcherAction(Request $request, $path)
+    public function dispatcherAction(Request $request)
     {
-        $path = "/$path"; // for consistency
+        $pageService = $this->get("agit.page");
+        $reqDetails = $this->load($request);
+        $pageDetails = null;
         $response = null;
 
-        $pageService = $this->get("agit.page");
-        $localeService = $this->get("agit.intl.locale");
-
-        // we’ll try to provide error messages in the UA’s language until the real locale is set
-        $localeService->setLocale($localeService->getUserLocale());
-
-        $reqDetails = $pageService->parseRequest($path);
-        $pageDetails = null;
-
-        // now set the real locale as requested via URL
-        $localeService->setLocale($reqDetails["locale"]);
-
-        if (isset($reqDetails["canonical"]) && $path !== $reqDetails["canonical"]) {
+        if (isset($reqDetails["canonical"]) && $request->getPathInfo() !== $reqDetails["canonical"]) {
             parse_str($request->getQueryString(), $query);
             $redirectUrl = $pageService->createUrl($reqDetails["canonical"], "", $query);
             $response = $pageService->createRedirectResponse($redirectUrl, 301);
@@ -49,13 +41,46 @@ class CatchallController extends Controller
         return $response;
     }
 
-    private function createResponse($pageDetails, $reqDetails)
+    public function exceptionAction(Request $request, FlattenException $exception)
+    {
+        try {
+            $reqDetails = $this->load($request);
+            $pageDetails = $this->get("agit.page")->getPage("_exception");
+            $response = $this->createResponse($pageDetails, $reqDetails, ["message" => $exception->getMessage()]);
+        } catch (Exception $e) {
+            $response = $this->render("AgitPageBundle:Special:exception.html.twig", [
+                "locale"  => "en_GB",
+                "message" => $exception->getMessage()
+            ]);
+        }
+
+        $response->setStatusCode($exception->getStatusCode());
+        $response->headers->set("X-Frame-Options", "SAMEORIGIN");
+
+        return $response;
+    }
+
+    private function load($request)
+    {
+        $localeService = $this->get("agit.intl.locale");
+
+        // we’ll try to provide error messages in the UA’s language until the real locale is set
+        $localeService->setLocale($localeService->getUserLocale());
+
+        $reqDetails = $this->get("agit.page")->parseRequest($request->getPathInfo());
+
+        // now set real locale as per request
+        $localeService->setLocale($reqDetails["locale"]);
+
+        return $reqDetails;
+    }
+
+    private function createResponse($pageDetails, $reqDetails, $extraVariables = [])
     {
         $variables = [
-            "pageId" => $pageDetails["pageId"],
             "locale" => $reqDetails["locale"],
             "vPath"  => $reqDetails["vPath"]
-        ];
+        ] + $extraVariables;
 
         if (isset($reqDetails["localeUrls"]) && isset($reqDetails["localeUrls"][$reqDetails["locale"]])) {
             $variables["localeUrls"] = $reqDetails["localeUrls"];

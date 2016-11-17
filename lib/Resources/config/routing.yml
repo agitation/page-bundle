@@ -1,6 +1,6 @@
 AgitPageBundle:
     pattern:  /{path}
     host: %agit.common.domain.app%
-    defaults: { _controller: AgitPageBundle:Catchall:dispatcher }
+    defaults: { _controller: AgitPageBundle:Catchall:dispatcher, _path : "" }
     requirements:
         path: ".*"
