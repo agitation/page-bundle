@@ -53,7 +53,7 @@ class NavigationExtension extends Twig_Extension
             new Twig_SimpleFunction("getPageUrls", [$this, "getPageUrls"]),
             new Twig_SimpleFunction("getPageLocaleUrls", [$this, "getPageLocaleUrls"], ["needs_context" => true, "is_safe" => ["all"]]),
 
-            new Twig_SimpleFunction("createUrl", [$this, "createUrl"], ["is_safe" => ["all"]]),
+            new Twig_SimpleFunction("createUrl", [$this, "createUrl"], ["needs_context" => true, "is_safe" => ["all"]]),
             new Twig_SimpleFunction("breadcrumb", [$this, "breadcrumb"],  ["needs_context" => true]),
 
             new Twig_SimpleFunction("hasPrev", [$this, "hasPrev"],  ["needs_context" => true]),
@@ -222,8 +222,12 @@ class NavigationExtension extends Twig_Extension
     }
 
     // returns the canonical path of the given path
-    public function createUrl($vPath, $locale = null)
+    public function createUrl($context, $vPath, $locale = null)
     {
+        if (! $vPath) {
+            $vPath = $context["vPath"];
+        }
+
         return $this->pageService->createUrl($vPath, $locale ?: $this->localeService->getLocale());
     }
 
