@@ -18,3 +18,9 @@ services:
         class: Agit\PageBundle\Service\NavigationExtension
         tags: [{ name: twig.extension }]
         arguments:  [ "@agit.page", "@agit.intl.locale", "@agit.intl.config", "@?agit.localedata.language" ]
+
+    # translation listener for page titles
+    agit.page.bundle.twig.collect:
+        class: Agit\PageBundle\EventListener\TranslationTwigListener
+        arguments: [ "@agit.common.filecollector", "@twig" ]
+        tags: [{ name: kernel.event_listener, event: agit.intl.bundle.files, method: onRegistration }]

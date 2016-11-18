@@ -9,8 +9,8 @@
 
 namespace Agit\PageBundle\TwigMeta;
 
-use Twig_Node;
 use Twig_Environment;
+use Twig_Node;
 
 trait PageConfigExtractorTrait
 {

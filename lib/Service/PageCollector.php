@@ -13,14 +13,11 @@ use Agit\BaseBundle\Exception\InternalErrorException;
 use Agit\BaseBundle\Service\FileCollector;
 use Agit\IntlBundle\Service\LocaleService;
 use Agit\PageBundle\Exception\InvalidConfigurationException;
-use Agit\PageBundle\TwigMeta\PageConfigNode;
 use Agit\PageBundle\TwigMeta\PageConfigExtractorTrait;
 use Doctrine\Common\Cache\Cache;
 use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerInterface;
 use Symfony\Component\HttpKernel\Kernel;
-use Twig_Compiler;
 use Twig_Environment;
-use Twig_Node;
 use Twig_Node_Expression_Function;
 
 /**
