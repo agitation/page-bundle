@@ -14,6 +14,7 @@ use Agit\BaseBundle\Service\FileCollector;
 use Agit\IntlBundle\Service\LocaleService;
 use Agit\PageBundle\Exception\InvalidConfigurationException;
 use Agit\PageBundle\TwigMeta\PageConfigNode;
+use Agit\PageBundle\TwigMeta\PageConfigExtractorTrait;
 use Doctrine\Common\Cache\Cache;
 use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerInterface;
 use Symfony\Component\HttpKernel\Kernel;
@@ -32,6 +33,8 @@ use Twig_Node_Expression_Function;
  */
 final class PageCollector implements CacheWarmerInterface
 {
+    use PageConfigExtractorTrait;
+
     const FILE_EXTENSION = "html.twig";
 
     private $availableTypes = ["page" => "Page", "special" => "Special"];
@@ -153,7 +156,6 @@ final class PageCollector implements CacheWarmerInterface
         $names = [];
 
         if ($nameNode instanceof Twig_Node_Expression_Function) {
-            $compiler = new Twig_Compiler($this->twig);
             $function = $this->twig->getFunction($nameNode->getAttribute("name"));
             $callable = $function->getCallable();
             $args = [];
@@ -221,28 +223,9 @@ final class PageCollector implements CacheWarmerInterface
         return $pos;
     }
 
-    private function getConfigFromTemplate($pagePath)
+    // needed by PageConfigExtractorTrait
+    protected function getTwig()
     {
-        $tokenStream = $this->twig->tokenize(file_get_contents($pagePath));
-        $rootNode = $this->twig->parse($tokenStream);
-
-        return $this->findConfigInNode($rootNode);
-    }
-
-    private function findConfigInNode($node)
-    {
-        $config = [];
-
-        foreach ($node->getIterator() as $childNode) {
-            if ($childNode instanceof Twig_Node) {
-                if ($childNode instanceof PageConfigNode) {
-                    $config += $childNode->getConfigValues();
-                }
-
-                $config += $this->findConfigInNode($childNode);
-            }
-        }
-
-        return $config;
+        return $this->twig;
     }
 }
