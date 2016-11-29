@@ -11,12 +11,14 @@ namespace Agit\PageBundle\TwigMeta;
 
 use Twig_Environment;
 use Twig_Node;
+use Twig_Source;
 
 trait PageConfigExtractorTrait
 {
     protected function getConfigFromTemplate($pagePath)
     {
-        $tokenStream = $this->getTwig()->tokenize(file_get_contents($pagePath));
+        $source = new Twig_Source(file_get_contents($pagePath), $pagePath, $pagePath);
+        $tokenStream = $this->getTwig()->tokenize($source);
         $rootNode = $this->getTwig()->parse($tokenStream);
 
         return $this->findConfigInNode($rootNode);
