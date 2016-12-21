@@ -73,9 +73,8 @@ class NavigationExtension extends Twig_Extension
     public function getPageTree($base)
     {
         $tree = $this->pageService->getTree($base);
-        $this->sortTree($tree);
 
-        return $tree;
+        return $this->sortTree($tree);
     }
 
     public function getPageUrls($base)
@@ -170,7 +169,7 @@ class NavigationExtension extends Twig_Extension
         return $return;
     }
 
-    private function sortTree(array &$tree)
+    private function sortTree(array $tree)
     {
         // NOTE: workaround for weird PHP bug with empty string keys
         if (isset($tree[""])) {
@@ -179,29 +178,27 @@ class NavigationExtension extends Twig_Extension
         }
 
         uasort($tree, function ($branch1, $branch2) {
+            $o1 = isset($branch1["data"]) ? $branch1["data"]["order"] : 100000;
+            $o2 = isset($branch2["data"]) ? $branch2["data"]["order"] : 100000;
+            $diff = $o1 - $o2;
 
-            if (! isset($branch1["data"])) {
-                $diff = 1;
-            } elseif (! isset($branch2["data"])) {
-                $diff = -1;
-            } else {
-                $diff = $branch1["data"]["order"] - $branch2["data"]["order"];
-            }
-
-            if ($diff === 0) {
-                return 0;
-            } elseif ($diff > 1) {
+            if ($diff <= -1) {
+                return -1;
+            } elseif ($diff >= 1) {
                 return 1;
             } else {
-                return -1;
+                return 0;
             }
         });
 
-        foreach ($tree as &$branch) {
+        foreach ($tree as $k => $branch) {
             if (isset($branch["children"])) {
-                $this->sortTree($branch["children"]);
+                $branch["children"] = $this->sortTree($branch["children"]);
+                $tree[$k] = $branch;
             }
         }
+
+        return $tree;
     }
 
     private function getPages(array $tree, $locale)
@@ -209,6 +206,10 @@ class NavigationExtension extends Twig_Extension
         $pages = [];
 
         foreach ($tree as $key => $value) {
+            if (! isset($value["data"])) {
+                continue;
+            }
+
             $name = isset($value["data"]["names"][$locale]) ? $value["data"]["names"][$locale] : $value["data"]["name"];
 
             if (isset($value["children"]) && count($value["children"])) {
