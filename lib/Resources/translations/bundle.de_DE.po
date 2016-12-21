@@ -3,27 +3,35 @@ msgstr ""
 "Language: de_DE\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 
-#: @AgitPageBundle/Resources/views/Special/forbidden.html.twig:28
+#: @AgitPageBundle/Controller/CatchallController.php:50
+msgid "Sorry, there has been an internal error. The administrators have been notified and will fix this as soon as possible."
+msgstr "Leider gab es einen internen Fehler. Die Administratoren wurden benachrichtigt und werden das Problem umgehend beheben."
+
+#: @AgitPageBundle/Resources/views/Special/forbidden.html.twig:25
 msgid "You are not allowed to access this page."
 msgstr "Sie haben keinen Zugriff auf diese Seite."
 
-#: @AgitPageBundle/Resources/views/Special/forbidden.html.twig:42
+#: @AgitPageBundle/Resources/views/Special/unauthorized.html.twig:25
+msgid "Please log in to access this page."
+msgstr "Bitte loggen Sie sich ein, um Zugriff auf diese Seite zu erhalten."
+
+#: @AgitPageBundle/Resources/views/Special/notfound.html.twig:25
+msgid "The requested page could not be found. Please check the spelling of the address, or notify the owner of the referring web page."
+msgstr "Die gewünschte Seite wurde nicht gefunden. Bitte prüfen Sie die Schreibweise der Adresse oder benachrichtigen Sie ggf. den Betreiber der verweisenden Seite."
+
+#: @AgitPageBundle/Resources/views/Special/exception.html.twig:1
+msgid "Something went wrong"
+msgstr ""
+
+#: @AgitPageBundle/Resources/views/Special/forbidden.html.twig:1
 msgctxt "page title"
 msgid "Forbidden"
 msgstr "Zugriff nicht gestattet"
 
-#: @AgitPageBundle/Resources/views/Special/unauthorized.html.twig:28
-msgid "Please log in to access this page."
-msgstr "Bitte loggen Sie sich ein, um Zugriff auf diese Seite zu erhalten."
-
-#: @AgitPageBundle/Resources/views/Special/unauthorized.html.twig:42
+#: @AgitPageBundle/Resources/views/Special/unauthorized.html.twig:1
 msgid "Unauthorized"
 msgstr "Nicht autorisiert"
 
-#: @AgitPageBundle/Resources/views/Special/notfound.html.twig:28
-msgid "The requested page could not be found. Please check the spelling of the address, or notify the owner of the referring web page."
-msgstr "Die gewünschte Seite wurde nicht gefunden. Bitte prüfen Sie die Schreibweise der Adresse oder benachrichtigen Sie ggf. den Betreiber der verweisenden Seite."
-
-#: @AgitPageBundle/Resources/views/Special/notfound.html.twig:42
+#: @AgitPageBundle/Resources/views/Special/notfound.html.twig:1
 msgid "Page not found"
 msgstr "Seite nicht gefunden"

@@ -3,27 +3,35 @@ msgstr ""
 "Language: en_GB\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 
-#: @AgitPageBundle/Resources/views/Special/forbidden.html.twig:28
+#: @AgitPageBundle/Controller/CatchallController.php:50
+msgid "Sorry, there has been an internal error. The administrators have been notified and will fix this as soon as possible."
+msgstr ""
+
+#: @AgitPageBundle/Resources/views/Special/forbidden.html.twig:25
 msgid "You are not allowed to access this page."
 msgstr ""
 
-#: @AgitPageBundle/Resources/views/Special/forbidden.html.twig:42
+#: @AgitPageBundle/Resources/views/Special/unauthorized.html.twig:25
+msgid "Please log in to access this page."
+msgstr ""
+
+#: @AgitPageBundle/Resources/views/Special/notfound.html.twig:25
+msgid "The requested page could not be found. Please check the spelling of the address, or notify the owner of the referring web page."
+msgstr ""
+
+#: @AgitPageBundle/Resources/views/Special/exception.html.twig:1
+msgid "Something went wrong"
+msgstr ""
+
+#: @AgitPageBundle/Resources/views/Special/forbidden.html.twig:1
 msgctxt "page title"
 msgid "Forbidden"
 msgstr ""
 
-#: @AgitPageBundle/Resources/views/Special/unauthorized.html.twig:28
-msgid "Please log in to access this page."
-msgstr ""
-
-#: @AgitPageBundle/Resources/views/Special/unauthorized.html.twig:42
+#: @AgitPageBundle/Resources/views/Special/unauthorized.html.twig:1
 msgid "Unauthorized"
 msgstr ""
 
-#: @AgitPageBundle/Resources/views/Special/notfound.html.twig:28
-msgid "The requested page could not be found. Please check the spelling of the address, or notify the owner of the referring web page."
-msgstr ""
-
-#: @AgitPageBundle/Resources/views/Special/notfound.html.twig:42
+#: @AgitPageBundle/Resources/views/Special/notfound.html.twig:1
 msgid "Page not found"
 msgstr ""
