@@ -15,6 +15,7 @@ use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Debug\Exception\FlattenException;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class CatchallController extends Controller
 {
@@ -34,6 +35,8 @@ class CatchallController extends Controller
             $response = $this->createResponse($pageDetails, $reqDetails);
         }
 
+        $this->setCommonHeaders($response, $pageDetails["status"]);
+
         $this->get("event_dispatcher")->dispatch(
             "agit.page.request",
             new PageRequestEvent($request, $response, $reqDetails, $pageDetails)
@@ -42,17 +45,21 @@ class CatchallController extends Controller
         return $response;
     }
 
-    public function exceptionAction(Request $request, FlattenException $exception)
+    public function exceptionAction(Request $request, FlattenException $exception, $format = "html")
     {
         $status = $exception->getStatusCode();
-        $message = $status && $status < 500
+        $message = ($status && $status < 500) || $this->getParameter("kernel.debug")
             ? $exception->getMessage()
             : Translate::t("Sorry, there has been an internal error. The administrators have been notified and will fix this as soon as possible.");
 
         try {
-            $reqDetails = $this->load($request);
-            $pageDetails = $this->get("agit.page")->getPage("_exception");
-            $response = $this->createResponse($pageDetails, $reqDetails, ["message" => $message]);
+            if ($format === "html") {
+                $reqDetails = $this->load($request);
+                $pageDetails = $this->get("agit.page")->getPage("_exception");
+                $response = $this->createResponse($pageDetails, $reqDetails, ["message" => $message]);
+            } else {
+                $response = new Response($message);
+            }
         } catch (Exception $e) {
             $response = $this->render("AgitPageBundle:Special:exception.html.twig", [
                 "locale"  => "en_GB",
@@ -60,8 +67,7 @@ class CatchallController extends Controller
             ]);
         }
 
-        $response->setStatusCode($status);
-        $response->headers->set("X-Frame-Options", "SAMEORIGIN");
+        $this->setCommonHeaders($response, $status);
 
         return $response;
     }
@@ -93,14 +99,15 @@ class CatchallController extends Controller
             $variables["canonicalUrl"] = $reqDetails["localeUrls"][$reqDetails["locale"]];
         }
 
-        $response = $this->render($pageDetails["template"], $variables);
+        return $this->render($pageDetails["template"], $variables);
+    }
 
+    private function setCommonHeaders(Response $response, $status = 200)
+    {
+        $response->setStatusCode($status);
         $response->headers->set("X-Frame-Options", "SAMEORIGIN");
         $response->headers->set("Cache-Control", "no-cache, must-revalidate, max-age=0", true);
         $response->headers->set("Pragma", "no-store", true);
         $response->headers->set("X-Content-Type-Options", "nosniff", true);
-        $response->setStatusCode($pageDetails["status"]);
-
-        return $response;
     }
 }
