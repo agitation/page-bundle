@@ -33,9 +33,8 @@ class CatchallController extends Controller
         } else {
             $pageDetails = $pageService->loadPage($reqDetails["vPath"]);
             $response = $this->createResponse($pageDetails, $reqDetails);
+            $this->setCommonHeaders($response, $pageDetails["status"]);
         }
-
-        $this->setCommonHeaders($response, $pageDetails["status"]);
 
         $this->get("event_dispatcher")->dispatch(
             "agit.page.request",
@@ -104,10 +103,9 @@ class CatchallController extends Controller
 
     private function createRedirectResponse($url, $status = 301)
     {
-        $response = new Response(sprintf("<a href='%s'>%s</a>", htmlentities($url), "Click here to continue."), $status);
+        $response = new Response(sprintf("<a href='%s'>%s</a>", htmlentities($url), "Click here to continue."));
+        $this->setCommonHeaders($response, $status);
         $response->headers->set("Location", $url);
-        $response->headers->set("Cache-Control", "no-cache, must-revalidate, max-age=0", true);
-        $response->headers->set("Pragma", "no-store", true);
 
         return $response;
     }
