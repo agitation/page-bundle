@@ -15,7 +15,6 @@ use Agit\IntlBundle\Service\LocaleConfigService;
 use Agit\IntlBundle\Service\LocaleService;
 use Agit\UserBundle\Service\UserService;
 use Doctrine\Common\Cache\Cache;
-use Symfony\Component\HttpFoundation\Response;
 
 // NOTE: The language which comes first in %agit.intl.locales% is the one that
 // will show when a page is called without language suffix. Modify the order of
@@ -111,16 +110,6 @@ class PageService
         }
 
         return $this->urlService->createAppUrl(implode("/", $parts), $params) . $hash;
-    }
-
-    public function createRedirectResponse($url, $status = 302)
-    {
-        $response = new Response(sprintf("<a href='%s'>%s</a>", htmlentities($url), "Click here to continue."), $status);
-        $response->headers->set("Location", $url);
-        $response->headers->set("Cache-Control", "no-cache, must-revalidate, max-age=0", true);
-        $response->headers->set("Pragma", "no-store", true);
-
-        return $response;
     }
 
     public function loadPage($vPath)

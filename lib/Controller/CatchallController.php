@@ -29,7 +29,7 @@ class CatchallController extends Controller
         if (isset($reqDetails["canonical"]) && $request->getPathInfo() !== $reqDetails["canonical"]) {
             parse_str($request->getQueryString(), $query);
             $redirectUrl = $pageService->createUrl($reqDetails["canonical"], "", $query);
-            $response = $pageService->createRedirectResponse($redirectUrl, 301);
+            $response = $pageService->createRedirectResponse($redirectUrl);
         } else {
             $pageDetails = $pageService->loadPage($reqDetails["vPath"]);
             $response = $this->createResponse($pageDetails, $reqDetails);
@@ -100,6 +100,16 @@ class CatchallController extends Controller
         }
 
         return $this->render($pageDetails["template"], $variables);
+    }
+
+    private function createRedirectResponse($url, $status = 301)
+    {
+        $response = new Response(sprintf("<a href='%s'>%s</a>", htmlentities($url), "Click here to continue."), $status);
+        $response->headers->set("Location", $url);
+        $response->headers->set("Cache-Control", "no-cache, must-revalidate, max-age=0", true);
+        $response->headers->set("Pragma", "no-store", true);
+
+        return $response;
     }
 
     private function setCommonHeaders(Response $response, $status = 200)
