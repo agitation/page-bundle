@@ -11,7 +11,6 @@ namespace Agit\PageBundle\Controller;
 
 use Agit\IntlBundle\Tool\Translate;
 use Agit\PageBundle\Event\PageRequestEvent;
-use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Debug\Exception\FlattenException;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,11 +28,10 @@ class CatchallController extends Controller
         if (isset($reqDetails["canonical"]) && $request->getPathInfo() !== $reqDetails["canonical"]) {
             parse_str($request->getQueryString(), $query);
             $redirectUrl = $pageService->createUrl($reqDetails["canonical"], "", $query);
-            $response = $pageService->createRedirectResponse($redirectUrl);
+            $response = $this->createRedirectResponse($redirectUrl);
         } else {
             $pageDetails = $pageService->loadPage($reqDetails["vPath"]);
             $response = $this->createResponse($pageDetails, $reqDetails);
-            $this->setCommonHeaders($response, $pageDetails["status"]);
         }
 
         $this->get("event_dispatcher")->dispatch(
@@ -51,22 +49,14 @@ class CatchallController extends Controller
             ? $exception->getMessage()
             : Translate::t("Sorry, there has been an internal error. The administrators have been notified and will fix this as soon as possible.");
 
-        try {
-            if ($format === "html") {
-                $reqDetails = $this->load($request);
-                $pageDetails = $this->get("agit.page")->getPage("_exception");
-                $response = $this->createResponse($pageDetails, $reqDetails, ["message" => $message]);
-            } else {
-                $response = new Response($message);
-            }
-        } catch (Exception $e) {
-            $response = $this->render("AgitPageBundle:Special:exception.html.twig", [
-                "locale"  => "en_GB",
-                "message" => $message
-            ]);
+        if ($format === "html") {
+            $reqDetails = $this->load($request);
+            $pageDetails = $this->get("agit.page")->getPage("_exception");
+            $response = $this->createResponse($pageDetails, $reqDetails, ["message" => $message]);
+        } else {
+            $response = new Response($messsage);
+            $this->setCommonHeaders($response, $status);
         }
-
-        $this->setCommonHeaders($response, $status);
 
         return $response;
     }
@@ -98,7 +88,10 @@ class CatchallController extends Controller
             $variables["canonicalUrl"] = $reqDetails["localeUrls"][$reqDetails["locale"]];
         }
 
-        return $this->render($pageDetails["template"], $variables);
+        $response = $this->render($pageDetails["template"], $variables);
+        $this->setCommonHeaders($response, $pageDetails["status"]);
+
+        return $response;
     }
 
     private function createRedirectResponse($url, $status = 301)
