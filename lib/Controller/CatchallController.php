@@ -46,16 +46,20 @@ class CatchallController extends Controller
     {
         $status = $exception->getStatusCode();
 
-        $message = ($status && $status < 500) || $this->getParameter("kernel.debug")
+        $debug = $this->getParameter("kernel.debug");
+
+        $message = ($status && $status < 500) || $debug
             ? $exception->getMessage()
             : Translate::t("Sorry, there has been an internal error. The administrators have been notified and will fix this as soon as possible.");
+
+        $trace = $debug ? print_r($exception->getTrace(), true) : "";
 
         if ($format === "html") {
             $reqDetails = $this->load($request);
             $pageDetails = $this->get("agit.page")->getPage("_exception");
-            $response = $this->createResponse($pageDetails, $reqDetails, ["message" => $message]);
+            $response = $this->createResponse($pageDetails, $reqDetails, ["message" => $message, "trace" => $trace]);
         } else {
-            $response = new Response($message);
+            $response = new Response("$message\n\n$trace");
             $this->setCommonHeaders($response, $status);
         }
 
