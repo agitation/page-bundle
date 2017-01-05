@@ -45,14 +45,12 @@ class CatchallController extends Controller
     public function exceptionAction(Request $request, FlattenException $exception, $format = "html")
     {
         $status = $exception->getStatusCode();
-
         $debug = $this->getParameter("kernel.debug");
+        $trace = $debug ? print_r($exception->getTrace(), true) : "";
 
         $message = ($status && $status < 500) || $debug
             ? $exception->getMessage()
             : Translate::t("Sorry, there has been an internal error. The administrators have been notified and will fix this as soon as possible.");
-
-        $trace = $debug ? print_r($exception->getTrace(), true) : "";
 
         if ($format === "html") {
             $reqDetails = $this->load($request);
