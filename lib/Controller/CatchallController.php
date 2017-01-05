@@ -45,6 +45,7 @@ class CatchallController extends Controller
     public function exceptionAction(Request $request, FlattenException $exception, $format = "html")
     {
         $status = $exception->getStatusCode();
+
         $message = ($status && $status < 500) || $this->getParameter("kernel.debug")
             ? $exception->getMessage()
             : Translate::t("Sorry, there has been an internal error. The administrators have been notified and will fix this as soon as possible.");
@@ -54,7 +55,7 @@ class CatchallController extends Controller
             $pageDetails = $this->get("agit.page")->getPage("_exception");
             $response = $this->createResponse($pageDetails, $reqDetails, ["message" => $message]);
         } else {
-            $response = new Response($messsage);
+            $response = new Response($message);
             $this->setCommonHeaders($response, $status);
         }
 
