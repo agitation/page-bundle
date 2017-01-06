@@ -58,7 +58,7 @@ class PageService
         $vPath = "/" . implode("/", $reqParts);
         $pageType = "page";
 
-        if (! $this->isPage($vPath)) {
+        if (! $this->pageExists($vPath)) {
             $pageType = "special";
             $vPath = "_notfound";
         }
@@ -112,9 +112,27 @@ class PageService
         return $this->urlService->createAppUrl(implode("/", $parts), $params) . $hash;
     }
 
+    public function pageExists($vPath)
+    {
+        return isset($this->pages[$vPath]);
+    }
+
+    public function getPage($vPath)
+    {
+        if (! $this->pageExists($vPath)) {
+            throw new InternalErrorException("Page `$vPath` does not exist.");
+        }
+
+        return $this->pages[$vPath];
+    }
+
     public function loadPage($vPath)
     {
-        if (! $this->isPage($vPath)) {
+        if (! $this->pageExists($vPath)) {
+            if (! $this->pageExists("_notfound")) {
+                throw new InternalErrorException("You must warm up the cache to make pages available.");
+            }
+
             $page = $this->getPage("_notfound");
         } else {
             $page = $this->getPage($vPath);
@@ -131,20 +149,6 @@ class PageService
         }
 
         return $page;
-    }
-
-    public function isPage($vPath)
-    {
-        return isset($this->pages[$vPath]);
-    }
-
-    public function getPage($vPath)
-    {
-        if (! $this->isPage($vPath)) {
-            throw new InternalErrorException("Page `$vPath` does not exist.");
-        }
-
-        return $this->pages[$vPath];
     }
 
     public function getPages()
