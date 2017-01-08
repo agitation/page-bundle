@@ -9,12 +9,12 @@
 
 namespace Agit\PageBundle\Exception;
 
-use Agit\BaseBundle\Exception\AgitException;
+use Agit\BaseBundle\Exception\PublicException;
 
 /**
  * A page or form was requested which does not exist.
  */
-class NotFoundException extends AgitException
+class NotFoundException extends PublicException
 {
     protected $statusCode = 404;
 }

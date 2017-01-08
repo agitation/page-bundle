@@ -9,12 +9,12 @@
 
 namespace Agit\PageBundle\Exception;
 
-use Agit\BaseBundle\Exception\AgitException;
+use Agit\BaseBundle\Exception\PublicException;
 
 /**
  * A page or form was requested which the current user is not allowed to access.
  */
-class UnauthorizedException extends AgitException
+class UnauthorizedException extends PublicException
 {
     protected $statusCode = 403;
 }
