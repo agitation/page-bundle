@@ -46,7 +46,7 @@ class CatchallController extends Controller
     {
         $status = $exception->getStatusCode();
         $debug = $this->getParameter("kernel.debug");
-        $trace = $debug ? print_r($exception->getTrace(), true) : "";
+        $trace = $debug && $status >= 500 ? print_r($exception->getTrace(), true) : "";
         $pageService = $this->get("agit.page");
 
         $message = ($status && $status < 500) || $debug
