@@ -53,6 +53,10 @@ class CatchallController extends Controller
             ? $exception->getMessage()
             : Translate::t("Sorry, there has been an internal error. The administrators have been notified and will fix this as soon as possible.");
 
+        if ($debug) {
+            $message . sprintf(" in %s:%d", $exception->getMessage(), $exception->getTrace()[0]["file"], $exception->getTrace()[0]["line"]);
+        }
+
         if ($pageService->pageExists("_exception") && $format === "html") {
             $pageDetails = $pageService->getPage("_exception");
             $reqDetails = $this->load($request);
