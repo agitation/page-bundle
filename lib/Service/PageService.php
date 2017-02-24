@@ -9,10 +9,10 @@
 
 namespace Agit\PageBundle\Service;
 
-use Agit\BaseBundle\Exception\InternalErrorException;
 use Agit\BaseBundle\Service\UrlService;
 use Agit\IntlBundle\Service\LocaleConfigService;
 use Agit\IntlBundle\Service\LocaleService;
+use Agit\PageBundle\Exception\NotFoundException;
 use Agit\UserBundle\Service\UserService;
 use Doctrine\Common\Cache\Cache;
 
@@ -120,7 +120,7 @@ class PageService
     public function getPage($vPath)
     {
         if (! $this->pageExists($vPath)) {
-            throw new InternalErrorException("Page `$vPath` does not exist.");
+            throw new NotFoundException("Page `$vPath` does not exist.");
         }
 
         return $this->pages[$vPath];
@@ -130,7 +130,7 @@ class PageService
     {
         if (! $this->pageExists($vPath)) {
             if (! $this->pageExists("_notfound")) {
-                throw new InternalErrorException("You must warm up the cache to make pages available.");
+                throw new NotFoundException("You must warm up the cache to make pages available.");
             }
 
             $page = $this->getPage("_notfound");
