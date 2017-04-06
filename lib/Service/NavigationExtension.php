@@ -22,12 +22,24 @@ class NavigationExtension extends Twig_Extension
 
     private $cache = [];
 
+    /**
+     * @var PageService
+     */
     private $pageService;
 
+    /**
+     * @var LocaleService
+     */
     private $localeService;
 
+    /**
+     * @var LocaleConfigService
+     */
     private $localeConfigService;
 
+    /**
+     * @var LanguageRepository
+     */
     private $languageRepository;
 
     public function __construct(PageService $pageService, LocaleService $localeService, LocaleConfigService $localeConfigService, LanguageRepository $languageRepository = null)
@@ -274,9 +286,11 @@ class NavigationExtension extends Twig_Extension
                         $name .= " ($country)";
                     }
 
-                    $list[$locale] = [
+                    $list[$lang] = [
+                        "id"        => $lang,
                         "url"       => $url,
                         "name"      => $name,
+                        "isDefault" => $locale === $this->localeService->getDefaultLocale(),
                         "isCurrent" => $locale === $this->localeService->getLocale()
                     ];
                 }
