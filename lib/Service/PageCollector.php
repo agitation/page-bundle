@@ -128,6 +128,7 @@ final class PageCollector implements CacheWarmerInterface
         }
 
         $data["caps"] = $config["capability"];
+        $data["attr"] = isset($config["attr"]) ? $config["attr"] : "";
         $data["status"] = isset($config["status"]) ? $config["status"] : 200;
 
         $twigTemplate = $this->twig->loadTemplate($data["template"]);

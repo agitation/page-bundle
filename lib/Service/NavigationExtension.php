@@ -225,9 +225,16 @@ class NavigationExtension extends Twig_Extension
             $name = isset($value["data"]["names"][$locale]) ? $value["data"]["names"][$locale] : $value["data"]["name"];
 
             if (isset($value["children"]) && count($value["children"])) {
-                $pages[$name] = $this->getPages($value["children"], $locale);
+                $pages[$value["data"]["vPath"]] = [
+                    "name"     => $name,
+                    "attr"     => $value["data"]["attr"],
+                    "children" => $this->getPages($value["children"], $locale)
+                ];
             } elseif (! $value["data"]["virtual"]) {
-                $pages[$name] = $this->pageService->createUrl($value["data"]["vPath"], $locale);
+                $pages[$value["data"]["vPath"]] = [
+                    "name" => $name,
+                    "attr" => $value["data"]["attr"]
+                ];
             }
         }
 

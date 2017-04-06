@@ -26,7 +26,7 @@ class PageConfigTokenParser extends Twig_TokenParser
 
         if ($field === "status") {
             $value = $tokenStream->expect(Twig_Token::NUMBER_TYPE)->getValue();
-        } elseif ($field === "capability") {
+        } elseif ($field === "capability" || $field === "attr") {
             $value = $tokenStream->expect(Twig_Token::STRING_TYPE)->getValue();
         } elseif ($field === "name") {
             $value = ($current->getType() === Twig_Token::STRING_TYPE)
