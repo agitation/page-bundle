@@ -3,7 +3,7 @@ msgstr ""
 "Language: de_DE\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 
-#: @AgitPageBundle/Controller/CatchallController.php:50
+#: @AgitPageBundle/Controller/CatchallController.php:54
 msgid "Sorry, there has been an internal error. The administrators have been notified and will fix this as soon as possible."
 msgstr "Leider gab es einen internen Fehler. Die Administratoren wurden benachrichtigt und werden das Problem umgehend beheben."
 
@@ -21,7 +21,7 @@ msgstr "Die gewünschte Seite wurde nicht gefunden. Bitte prüfen Sie die Schrei
 
 #: @AgitPageBundle/Resources/views/Special/exception.html.twig:1
 msgid "Something went wrong"
-msgstr ""
+msgstr "Es ist ein Fehler aufgetreten"
 
 #: @AgitPageBundle/Resources/views/Special/forbidden.html.twig:1
 msgctxt "page title"

@@ -3,7 +3,7 @@ msgstr ""
 "Language: en_US\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 
-#: @AgitPageBundle/Controller/CatchallController.php:50
+#: @AgitPageBundle/Controller/CatchallController.php:54
 msgid "Sorry, there has been an internal error. The administrators have been notified and will fix this as soon as possible."
 msgstr ""
 
