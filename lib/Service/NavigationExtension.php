@@ -15,6 +15,7 @@ use Agit\LocaleDataBundle\Entity\LanguageRepository;
 use Collator;
 use Twig_Extension;
 use Twig_SimpleFunction;
+use Agit\UserBundle\Service\UserService;
 
 class NavigationExtension extends Twig_Extension
 {
@@ -42,12 +43,24 @@ class NavigationExtension extends Twig_Extension
      */
     private $languageRepository;
 
-    public function __construct(PageService $pageService, LocaleService $localeService, LocaleConfigService $localeConfigService, LanguageRepository $languageRepository = null)
+    /**
+     * @var UserService
+     */
+    private $userService;
+
+    public function __construct(
+        PageService $pageService,
+        LocaleService $localeService,
+        LocaleConfigService $localeConfigService,
+        LanguageRepository $languageRepository = null,
+        UserService $userService = null
+    )
     {
         $this->pageService = $pageService;
         $this->localeService = $localeService;
         $this->localeConfigService = $localeConfigService;
         $this->languageRepository = $languageRepository;
+        $this->userService = $userService;
     }
 
     public function getName()
@@ -89,11 +102,10 @@ class NavigationExtension extends Twig_Extension
         return $this->sortTree($tree);
     }
 
-    public function getPageUrls($base)
+    public function getPageUrls($base, $onlyAccessible = true)
     {
         $tree = $this->getPageTree($base);
-
-        return $this->getPages($tree, $this->localeService->getLocale());
+        return $this->getPages($tree, $onlyAccessible, $this->localeService->getLocale());
     }
 
     public function breadcrumb($context, $base, $withLinks = false)
@@ -213,23 +225,33 @@ class NavigationExtension extends Twig_Extension
         return $tree;
     }
 
-    private function getPages(array $tree, $locale)
+    private function getPages(array $tree, $onlyAccessible, $locale)
     {
         $pages = [];
 
         foreach ($tree as $key => $value) {
-            if (! isset($value["data"])) {
+            if (
+                ! isset($value["data"]) || (
+                    $onlyAccessible && $value["data"]["caps"] && (
+                        !$this->userService || !$this->userService->currentUserCan($value["data"]["caps"])
+                    )
+                )
+            ) {
                 continue;
             }
 
             $name = isset($value["data"]["names"][$locale]) ? $value["data"]["names"][$locale] : $value["data"]["name"];
 
             if (isset($value["children"]) && count($value["children"])) {
-                $pages[$value["data"]["vPath"]] = [
-                    "name"     => $name,
-                    "attr"     => $value["data"]["attr"],
-                    "children" => $this->getPages($value["children"], $locale)
-                ];
+                $children = $this->getPages($value["children"], $onlyAccessible, $locale);
+
+                if (count($children)) {
+                    $pages[$value["data"]["vPath"]] = [
+                        "name"     => $name,
+                        "attr"     => $value["data"]["attr"],
+                        "children" => $children
+                    ];
+                }
             } elseif (! $value["data"]["virtual"]) {
                 $pages[$value["data"]["vPath"]] = [
                     "name" => $name,

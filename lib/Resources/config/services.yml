@@ -22,7 +22,7 @@ services:
     agit.page.navigation:
         class: Agit\PageBundle\Service\NavigationExtension
         tags: [{ name: twig.extension }]
-        arguments:  [ "@agit.page", "@agit.intl.locale", "@agit.intl.config", "@?agit.localedata.language" ]
+        arguments:  [ "@agit.page", "@agit.intl.locale", "@agit.intl.config", "@?agit.localedata.language", "@?agit.user" ]
 
     # translation listener for page titles
     agit.page.bundle.twig.collect:
