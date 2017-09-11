@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 /*
  * @package    agitation/page-bundle
  * @link       http://github.com/agitation/page-bundle
@@ -47,39 +47,44 @@ class PageService
 
     public function parseRequest($request)
     {
-        $reqParts = preg_split("|/+|", $request, null, PREG_SPLIT_NO_EMPTY);
+        $reqParts = preg_split('|/+|', $request, null, PREG_SPLIT_NO_EMPTY);
         $lang = end($reqParts);
         $locale = $this->getLocaleFromLangId($lang);
 
-        if ($locale) {
+        if ($locale)
+        {
             array_pop($reqParts);
         }
 
-        $vPath = "/" . implode("/", $reqParts);
-        $pageType = "page";
+        $vPath = '/' . implode('/', $reqParts);
+        $pageType = 'page';
 
-        if (! $this->pageExists($vPath)) {
-            $pageType = "special";
-            $vPath = "_notfound";
+        if (! $this->pageExists($vPath))
+        {
+            $pageType = 'special';
+            $vPath = '_notfound';
         }
 
-        if (! $locale || ! in_array($locale, $this->activeLocales)) {
+        if (! $locale || ! in_array($locale, $this->activeLocales))
+        {
             $locale = $this->primaryLocale;
         }
 
         $reqDetails = [
-            "request" => $request,
-            "vPath"   => $vPath,
-            "locale"  => $locale
+            'request' => $request,
+            'vPath' => $vPath,
+            'locale' => $locale
         ];
 
-        if ($pageType !== "special") {
-            $reqDetails["localeUrls"] = [];
-            foreach ($this->activeLocales as $activeLocale) {
-                $reqDetails["localeUrls"][$activeLocale] = $this->createUrl($vPath, $activeLocale);
+        if ($pageType !== 'special')
+        {
+            $reqDetails['localeUrls'] = [];
+            foreach ($this->activeLocales as $activeLocale)
+            {
+                $reqDetails['localeUrls'][$activeLocale] = $this->createUrl($vPath, $activeLocale);
             }
 
-            $reqDetails["canonical"] = parse_url($reqDetails["localeUrls"][$locale], PHP_URL_PATH);
+            $reqDetails['canonical'] = parse_url($reqDetails['localeUrls'][$locale], PHP_URL_PATH);
         }
 
         return $reqDetails;
@@ -88,28 +93,32 @@ class PageService
     public function createUrl($vPath, $locale = null, array $params = [])
     {
         $parts = [];
-        $hash = "";
+        $hash = '';
 
-        if (strpos($vPath, "#") !== false) {
-            $hash = strstr($vPath, "#");
-            $vPath = strstr($vPath, "#", true);
+        if (strpos($vPath, '#') !== false)
+        {
+            $hash = strstr($vPath, '#');
+            $vPath = strstr($vPath, '#', true);
         }
 
-        $vPath = trim($vPath, "/");
+        $vPath = trim($vPath, '/');
 
-        if ($vPath) {
+        if ($vPath)
+        {
             $parts[] = $vPath;
         }
 
-        if ($locale === null) {
+        if ($locale === null)
+        {
             $locale = $this->currentLocale;
         }
 
-        if ($locale !== $this->primaryLocale && in_array($locale, $this->activeLocales)) {
+        if ($locale !== $this->primaryLocale && in_array($locale, $this->activeLocales))
+        {
             $parts[] = substr($locale, 0, 2);
         }
 
-        return $this->urlService->createAppUrl(implode("/", $parts), $params) . $hash;
+        return $this->urlService->createAppUrl(implode('/', $parts), $params) . $hash;
     }
 
     public function pageExists($vPath)
@@ -119,7 +128,8 @@ class PageService
 
     public function getPage($vPath)
     {
-        if (! $this->pageExists($vPath)) {
+        if (! $this->pageExists($vPath))
+        {
             throw new NotFoundException("Page `$vPath` does not exist.");
         }
 
@@ -128,22 +138,32 @@ class PageService
 
     public function loadPage($vPath)
     {
-        if (! $this->pageExists($vPath)) {
-            if (! $this->pageExists("_notfound")) {
-                throw new NotFoundException("You must warm up the cache to make pages available.");
+        if (! $this->pageExists($vPath))
+        {
+            if (! $this->pageExists('_notfound'))
+            {
+                throw new NotFoundException('You must warm up the cache to make pages available.');
             }
 
-            $page = $this->getPage("_notfound");
-        } else {
+            $page = $this->getPage('_notfound');
+        }
+        else
+        {
             $page = $this->getPage($vPath);
 
-            if ($page["virtual"]) {
-                $page = $this->getPage("_notfound");
-            } elseif ($page["caps"]) {
-                if (! $this->userService || ! $this->userService->getCurrentUser()) {
-                    $page = $this->getPage("_unauthorized");
-                } elseif (! $this->userService->currentUserCan($page["caps"])) {
-                    $page = $this->getPage("_forbidden");
+            if ($page['virtual'])
+            {
+                $page = $this->getPage('_notfound');
+            }
+            elseif ($page['caps'])
+            {
+                if (! $this->userService || ! $this->userService->getCurrentUser())
+                {
+                    $page = $this->getPage('_unauthorized');
+                }
+                elseif (! $this->userService->currentUserCan($page['caps']))
+                {
+                    $page = $this->getPage('_forbidden');
                 }
             }
         }
@@ -166,10 +186,14 @@ class PageService
     {
         $locale = null;
 
-        if (is_string($string) && strlen($string) === 2) {
-            foreach ($this->availableLocales as $availableLocale) {
-                if (substr($availableLocale, 0, 2) === $string) {
+        if (is_string($string) && strlen($string) === 2)
+        {
+            foreach ($this->availableLocales as $availableLocale)
+            {
+                if (substr($availableLocale, 0, 2) === $string)
+                {
                     $locale = $availableLocale;
+
                     break;
                 }
             }
@@ -179,41 +203,52 @@ class PageService
     }
 
     // NOTE: If the $prefix ends with a slash, the "root" page will be omitted, otherwise included.
-    private function createTree($pages, $prefix = "/")
+    private function createTree($pages, $prefix = '/')
     {
         ksort($pages);
         $tree = [];
 
-        foreach ($pages as $vPath => $details) {
-            if ($vPath[0] === "_" || ($prefix && strpos($vPath, $prefix) !== 0)) {
+        foreach ($pages as $vPath => $details)
+        {
+            if ($vPath[0] === '_' || ($prefix && strpos($vPath, $prefix) !== 0))
+            {
                 continue;
             }
 
-            $vPathParts = array_filter(explode("/", trim(substr($vPath, strlen($prefix)), "/")));
+            $vPathParts = array_filter(explode('/', trim(substr($vPath, strlen($prefix)), '/')));
             $totalDepth = count($vPathParts);
             $curDepth = 0;
 
             // root index page
-            if (count($vPathParts) === 0) {
-                $tree[""] = ["data" => $details, "children" => []];
-            } else {
+            if (count($vPathParts) === 0)
+            {
+                $tree[''] = ['data' => $details, 'children' => []];
+            }
+            else
+            {
                 $curBranch = &$tree;
 
-                foreach ($vPathParts as $part) {
+                foreach ($vPathParts as $part)
+                {
                     ++$curDepth;
 
-                    if (! isset($curBranch[$part])) {
+                    if (! isset($curBranch[$part]))
+                    {
                         $curBranch[$part] = [];
                     }
 
-                    if ($curDepth === $totalDepth) {
-                        $curBranch[$part]["data"] = $details;
-                    } else {
-                        if (! isset($curBranch[$part]["children"])) {
-                            $curBranch[$part]["children"] = [];
+                    if ($curDepth === $totalDepth)
+                    {
+                        $curBranch[$part]['data'] = $details;
+                    }
+                    else
+                    {
+                        if (! isset($curBranch[$part]['children']))
+                        {
+                            $curBranch[$part]['children'] = [];
                         }
 
-                        $curBranch = &$curBranch[$part]["children"];
+                        $curBranch = &$curBranch[$part]['children'];
                     }
                 }
             }

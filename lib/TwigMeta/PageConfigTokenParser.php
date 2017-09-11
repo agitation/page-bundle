@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 /*
  * @package    agitation/page-bundle
  * @link       http://github.com/agitation/page-bundle
@@ -24,18 +24,27 @@ class PageConfigTokenParser extends Twig_TokenParser
         $field = $tokenStream->expect(Twig_Token::NAME_TYPE)->getValue();
         $current = $tokenStream->getCurrent();
 
-        if ($field === "status") {
+        if ($field === 'status')
+        {
             $value = $tokenStream->expect(Twig_Token::NUMBER_TYPE)->getValue();
-        } elseif ($field === "capability" || $field === "attr") {
+        }
+        elseif ($field === 'capability' || $field === 'attr')
+        {
             $value = $tokenStream->expect(Twig_Token::STRING_TYPE)->getValue();
-        } elseif ($field === "name") {
+        }
+        elseif ($field === 'name')
+        {
             $value = ($current->getType() === Twig_Token::STRING_TYPE)
                 ? $tokenStream->expect(Twig_Token::STRING_TYPE)->getValue()
                 : $this->parser->getExpressionParser()->parseExpression();
-        } elseif ($field === "virtual") {
+        }
+        elseif ($field === 'virtual')
+        {
             $value = true;
-        } else {
-            throw new InvalidConfigurationException(sprintf("Unknown token for %s in line %s.", $field, $token->getLine()));
+        }
+        else
+        {
+            throw new InvalidConfigurationException(sprintf('Unknown token for %s in line %s.', $field, $token->getLine()));
         }
 
         $tokenStream->expect(Twig_Token::BLOCK_END_TYPE);
@@ -47,6 +56,6 @@ class PageConfigTokenParser extends Twig_TokenParser
 
     public function getTag()
     {
-        return "agit";
+        return 'agit';
     }
 }

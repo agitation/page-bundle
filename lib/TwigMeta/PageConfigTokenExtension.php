@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 /*
  * @package    agitation/page-bundle
  * @link       http://github.com/agitation/page-bundle
@@ -20,6 +20,6 @@ class PageConfigTokenExtension extends Twig_Extension
 
     public function getName()
     {
-        return "agit.page.meta";
+        return 'agit.page.meta';
     }
 }

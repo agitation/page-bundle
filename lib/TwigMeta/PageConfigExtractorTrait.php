@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 /*
  * @package    agitation/page-bundle
  * @link       http://github.com/agitation/page-bundle
@@ -28,9 +28,12 @@ trait PageConfigExtractorTrait
     {
         $config = [];
 
-        foreach ($node->getIterator() as $childNode) {
-            if ($childNode instanceof Twig_Node) {
-                if ($childNode instanceof PageConfigNode) {
+        foreach ($node->getIterator() as $childNode)
+        {
+            if ($childNode instanceof Twig_Node)
+            {
+                if ($childNode instanceof PageConfigNode)
+                {
                     $config += $childNode->getConfigValues();
                 }
 

@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 /*
  * @package    agitation/page-bundle
  * @link       http://github.com/agitation/page-bundle
@@ -32,9 +32,9 @@ final class PageCollector implements CacheWarmerInterface
 {
     use PageConfigExtractorTrait;
 
-    const FILE_EXTENSION = "html.twig";
+    const FILE_EXTENSION = 'html.twig';
 
-    private $availableTypes = ["page" => "Page", "special" => "Special"];
+    private $availableTypes = ['page' => 'Page', 'special' => 'Special'];
 
     private $cache;
 
@@ -66,6 +66,7 @@ final class PageCollector implements CacheWarmerInterface
 
     /**
      * Warms up the cache, required by CacheWarmerInterface.
+     * @param mixed $cacheDir
      */
     public function warmUp($cacheDir)
     {
@@ -85,24 +86,29 @@ final class PageCollector implements CacheWarmerInterface
         $pages = [];
         $viewsPaths = [];
 
-        foreach ($this->kernel->getBundles() as $alias => $bundle) {
+        foreach ($this->kernel->getBundles() as $alias => $bundle)
+        {
             $viewsPaths[] = $this->fileCollector->resolve("$alias:Resources:views");
         }
 
-        $viewsPaths[] = $this->kernel->getRootDir() . "/Resources/views";
+        $viewsPaths[] = $this->kernel->getRootDir() . '/Resources/views';
         $viewsPaths = array_filter($viewsPaths);
 
-        foreach ($viewsPaths as $viewsPath) {
-            foreach ($this->availableTypes as $type => $subdir) {
+        foreach ($viewsPaths as $viewsPath)
+        {
+            foreach ($this->availableTypes as $type => $subdir)
+            {
                 $path = "$viewsPath/$subdir";
 
-                if (! is_dir($path)) {
+                if (! is_dir($path))
+                {
                     continue;
                 }
 
-                foreach ($this->fileCollector->collect($path, self::FILE_EXTENSION) as $pagePath) {
+                foreach ($this->fileCollector->collect($path, self::FILE_EXTENSION) as $pagePath)
+                {
                     $data = $this->getData($type, $subdir, $path, $pagePath, self::FILE_EXTENSION);
-                    $pages[$data["vPath"]] = $data;
+                    $pages[$data['vPath']] = $data;
                 }
             }
         }
@@ -112,38 +118,41 @@ final class PageCollector implements CacheWarmerInterface
 
     protected function getData($type, $subdir, $basePath, $pagePath, $extension)
     {
-        $page = str_replace(["$basePath/", ".$extension"], "", $pagePath);
+        $page = str_replace(["$basePath/", ".$extension"], '', $pagePath);
 
         $data = [
-            "type"      => $type,
-            "vPath"     => ($type === "page") ? $this->pageToVirtualPath($page) : "_" . basename($page),
-            "template"  => $this->pathToTemplateName($basePath, $page, $extension),
-            "order"     => $this->getOrderPosition($page)
+            'type' => $type,
+            'vPath' => ($type === 'page') ? $this->pageToVirtualPath($page) : '_' . basename($page),
+            'template' => $this->pathToTemplateName($basePath, $page, $extension),
+            'order' => $this->getOrderPosition($page)
         ];
 
         $config = $this->getConfigFromTemplate($pagePath);
 
-        if (! isset($config["capability"])) {
-            throw new InternalErrorException(sprintf("Page `%s` does not define capabilities.", $data["template"]));
+        if (! isset($config['capability']))
+        {
+            throw new InternalErrorException(sprintf('Page `%s` does not define capabilities.', $data['template']));
         }
 
-        $data["caps"] = $config["capability"];
-        $data["attr"] = isset($config["attr"]) ? $config["attr"] : "";
-        $data["status"] = isset($config["status"]) ? $config["status"] : 200;
+        $data['caps'] = $config['capability'];
+        $data['attr'] = $config['attr'] ?? '';
+        $data['status'] = $config['status'] ?? 200;
 
-        $twigTemplate = $this->twig->loadTemplate($data["template"]);
+        $twigTemplate = $this->twig->loadTemplate($data['template']);
         $hasParent = (bool) $twigTemplate->getParent([]);
-        $data["virtual"] = isset($config["virtual"]);
+        $data['virtual'] = isset($config['virtual']);
 
-        if (! isset($config["name"])) {
-            throw new InvalidConfigurationException(sprintf("Page `%s` is missing the `agit.name` tag.", $data["template"]));
+        if (! isset($config['name']))
+        {
+            throw new InvalidConfigurationException(sprintf('Page `%s` is missing the `agit.name` tag.', $data['template']));
         }
 
-        $data["names"] = $this->getNames($config["name"]);
-        $data["name"] = $data["names"][$this->defaultLocale];
+        $data['names'] = $this->getNames($config['name']);
+        $data['name'] = $data['names'][$this->defaultLocale];
 
-        if ($data["virtual"]) {
-            unset($data["template"]);
+        if ($data['virtual'])
+        {
+            unset($data['template']);
         }
 
         return $data;
@@ -153,25 +162,33 @@ final class PageCollector implements CacheWarmerInterface
     {
         $names = [];
 
-        if ($nameNode instanceof Twig_Node_Expression_Function) {
-            $function = $this->twig->getFunction($nameNode->getAttribute("name"));
+        if ($nameNode instanceof Twig_Node_Expression_Function)
+        {
+            $function = $this->twig->getFunction($nameNode->getAttribute('name'));
             $callable = $function->getCallable();
             $args = [];
 
-            foreach ($nameNode->getNode("arguments") as $argNode) {
-                $args[] = $argNode->getAttribute("value");
+            foreach ($nameNode->getNode('arguments') as $argNode)
+            {
+                $args[] = $argNode->getAttribute('value');
             }
 
-            foreach ($this->availableLocales as $locale) {
+            foreach ($this->availableLocales as $locale)
+            {
                 $this->localeService->setLocale($locale);
                 $names[$locale] = call_user_func_array($callable, $args);
             }
-        } elseif (is_string($nameNode)) {
-            foreach ($this->availableLocales as $locale) {
+        }
+        elseif (is_string($nameNode))
+        {
+            foreach ($this->availableLocales as $locale)
+            {
                 $names[$locale] = $nameNode;
             }
-        } else {
-            throw new InvalidConfigurationException("The value for `agit.name` must be either a string or a function expression.");
+        }
+        else
+        {
+            throw new InvalidConfigurationException('The value for `agit.name` must be either a string or a function expression.');
         }
 
         $this->localeService->setLocale($this->defaultLocale);
@@ -181,18 +198,18 @@ final class PageCollector implements CacheWarmerInterface
 
     protected function pageToVirtualPath($page)
     {
-        $parts = preg_split("|/+|", $page, null, PREG_SPLIT_NO_EMPTY);
+        $parts = preg_split('|/+|', $page, null, PREG_SPLIT_NO_EMPTY);
 
         $parts = array_map(function ($part) {
             // if the first part is numeric, it is for ordering and must be chopped off
-            return preg_replace("|^\d{1,3}\.|", "", $part);
+            return preg_replace("|^\d{1,3}\.|", '', $part);
         }, $parts);
 
         $parts = array_filter($parts, function ($part) {
-            return $part !== "index" && $part !== "";
+            return $part !== 'index' && $part !== '';
         });
 
-        return "/" . implode("/", $parts);
+        return '/' . implode('/', $parts);
     }
 
     protected function pathToTemplateName($basePath, $page, $extension)
@@ -203,17 +220,20 @@ final class PageCollector implements CacheWarmerInterface
     protected function getOrderPosition($page)
     {
         $pos = 0;
-        $parts = preg_split("|/+|", $page, null, PREG_SPLIT_NO_EMPTY);
+        $parts = preg_split('|/+|', $page, null, PREG_SPLIT_NO_EMPTY);
 
-        if (count($parts)) {
+        if (count($parts))
+        {
             $last = array_pop($parts);
 
             // when it"s an index page, then the order must be determined via the parent directory.
-            if ($last === "index" && count($parts)) {
+            if ($last === 'index' && count($parts))
+            {
                 $last = array_pop($parts);
             }
 
-            if (preg_match("|^(\d{1,3})\.|", $last, $matches) && is_array($matches) && isset($matches[1])) {
+            if (preg_match("|^(\d{1,3})\.|", $last, $matches) && is_array($matches) && isset($matches[1]))
+            {
                 $pos = (int) $matches[1];
             }
         }

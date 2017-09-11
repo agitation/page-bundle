@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 /*
  * @package    agitation/page-bundle
  * @link       http://github.com/agitation/page-bundle
@@ -21,7 +21,7 @@ class TranslationTwigListener
 {
     use PageConfigExtractorTrait;
 
-    protected $bundleTemplatesPath = "Resources/views";
+    protected $bundleTemplatesPath = 'Resources/views';
 
     private $fileCollector;
 
@@ -51,15 +51,17 @@ class TranslationTwigListener
         $this->twig->enableAutoReload();
         $this->twig->setCache($cachePath);
 
-        foreach ($this->fileCollector->collect($tplDir, "twig") as $tplPath) {
+        foreach ($this->fileCollector->collect($tplDir, 'twig') as $tplPath)
+        {
             $config = $this->getConfigFromTemplate($tplPath);
 
-            if ($config && is_array($config) && isset($config["name"]) && $config["name"] instanceof Twig_Node_Expression_Function) {
+            if ($config && is_array($config) && isset($config['name']) && $config['name'] instanceof Twig_Node_Expression_Function)
+            {
                 $compiler = new Twig_Compiler($this->twig);
-                $config["name"]->compile($compiler);
+                $config['name']->compile($compiler);
 
                 $cacheFilePath = $this->twig->getCacheFilename($tplPath);
-                $filesystem->dumpFile($cacheFilePath, "<?php " . $compiler->getSource());
+                $filesystem->dumpFile($cacheFilePath, '<?php ' . $compiler->getSource());
                 $tplPathId = str_replace($tplDir, "@$bundleAlias/", $tplPath);
                 $event->registerSourceFile($tplPathId, $cacheFilePath);
             }
@@ -67,7 +69,7 @@ class TranslationTwigListener
 
         // resetting original values
         $this->twig->setCache($actualCachePath);
-        call_user_func([$this->twig, $actualAutoReload ? "enableAutoReload" :  "disableAutoReload"]);
+        call_user_func([$this->twig, $actualAutoReload ? 'enableAutoReload' : 'disableAutoReload']);
     }
 
     // needed by PageConfigExtractorTrait
