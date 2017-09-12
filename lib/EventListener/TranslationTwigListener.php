@@ -37,6 +37,7 @@ class TranslationTwigListener
     {
         $bundleAlias = $event->getBundleAlias();
         $tplDir = $this->fileCollector->resolve($bundleAlias);
+        $twigCache = $this->twig->getCache(false);
 
         // storing the old values to reset them when we’re done
         $actualCachePath = $this->twig->getCache();
@@ -60,7 +61,7 @@ class TranslationTwigListener
                 $compiler = new Twig_Compiler($this->twig);
                 $config['name']->compile($compiler);
 
-                $cacheFilePath = $this->twig->getCacheFilename($tplPath);
+                $cacheFilePath = $twigCache->generateKey($tplPath, $this->twig->getTemplateClass($tplPath));
                 $filesystem->dumpFile($cacheFilePath, '<?php ' . $compiler->getSource());
                 $tplPathId = str_replace($tplDir, "@$bundleAlias/", $tplPath);
                 $event->registerSourceFile($tplPathId, $cacheFilePath);

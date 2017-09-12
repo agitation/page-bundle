@@ -198,7 +198,7 @@ final class PageCollector implements CacheWarmerInterface
 
     protected function pageToVirtualPath($page)
     {
-        $parts = preg_split('|/+|', $page, null, PREG_SPLIT_NO_EMPTY);
+        $parts = preg_split('|/+|', $page, -1, PREG_SPLIT_NO_EMPTY);
 
         $parts = array_map(function ($part) {
             // if the first part is numeric, it is for ordering and must be chopped off
@@ -220,7 +220,7 @@ final class PageCollector implements CacheWarmerInterface
     protected function getOrderPosition($page)
     {
         $pos = 0;
-        $parts = preg_split('|/+|', $page, null, PREG_SPLIT_NO_EMPTY);
+        $parts = preg_split('|/+|', $page, -1, PREG_SPLIT_NO_EMPTY);
 
         if (count($parts))
         {
