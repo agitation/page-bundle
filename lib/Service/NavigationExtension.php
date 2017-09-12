@@ -113,7 +113,7 @@ class NavigationExtension extends Twig_Extension
         $locale = $context['locale'];
         $breadcrumb = [];
         $path = '';
-        $pathParts = preg_split('|/+|', $context['vPath'], null, PREG_SPLIT_NO_EMPTY);
+        $pathParts = preg_split('|/+|', $context['vPath'], -1, PREG_SPLIT_NO_EMPTY);
 
         foreach ($pathParts as $pathPart)
         {

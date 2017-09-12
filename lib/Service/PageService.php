@@ -47,7 +47,7 @@ class PageService
 
     public function parseRequest($request)
     {
-        $reqParts = preg_split('|/+|', $request, null, PREG_SPLIT_NO_EMPTY);
+        $reqParts = preg_split('|/+|', $request, -1, PREG_SPLIT_NO_EMPTY);
         $lang = end($reqParts);
         $locale = $this->getLocaleFromLangId($lang);
 

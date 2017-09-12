@@ -27,7 +27,7 @@ class CatchallController extends Controller
 
         if (isset($reqDetails['canonical']) && $request->getPathInfo() !== $reqDetails['canonical'])
         {
-            parse_str($request->getQueryString(), $query);
+            parse_str((string)$request->getQueryString(), $query);
             $redirectUrl = $pageService->createUrl($reqDetails['canonical'], '', $query);
             $response = $this->createRedirectResponse($redirectUrl);
         }
