@@ -16,9 +16,9 @@ use Agit\PageBundle\Exception\NotFoundException;
 use Agit\UserBundle\Service\UserService;
 use Doctrine\Common\Cache\Cache;
 
-// NOTE: The language which comes first in %agit.intl.locales% is the one that
+// NOTE: The language which comes first in %agit_intl_locales% is the one that
 // will show when a page is called without language suffix. Modify the order of
-// locales in %agit.intl.locales% in order to set a different language as default.
+// locales in %agit_intl_locales% in order to set a different language as default.
 
 class PageService
 {
