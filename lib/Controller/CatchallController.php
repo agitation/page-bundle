@@ -45,7 +45,7 @@ class CatchallController extends Controller
         return $response;
     }
 
-    public function exceptionAction(Request $request, FlattenException $exception, $format = 'html')
+    public function exceptionAction(Request $request, FlattenException $exception, $format = 'txt')
     {
         $status = $exception->getStatusCode();
         $debug = $this->getParameter('kernel.debug');
