@@ -90,7 +90,6 @@ class NavigationExtension extends Twig_Extension
     public function getPageName($context)
     {
         $page = $this->pageService->getPage($context['vPath']);
-
         return $page['names'][$context['locale']];
     }
 

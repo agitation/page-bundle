@@ -10,7 +10,13 @@ declare(strict_types=1);
 namespace Agit\PageBundle\Controller;
 
 use Agit\IntlBundle\Tool\Translate;
+use Agit\IntlBundle\Service\LocaleService;
+
 use Agit\PageBundle\Event\PageRequestEvent;
+use Agit\PageBundle\Service\PageService;
+
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Debug\Exception\FlattenException;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,9 +24,30 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CatchallController extends Controller
 {
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
+
+    /**
+    * @var PageService
+    */
+    private $pageService;
+
+    /**
+    * @var LocaleService
+    */
+    private $localeService;
+
+    public function __construct(EventDispatcherInterface $eventDispatcher, PageService $pageService, LocaleService $localeService)
+    {
+        $this->eventDispatcher = $eventDispatcher;
+        $this->pageService = $pageService;
+        $this->localeService = $localeService;
+    }
+
     public function dispatcherAction(Request $request)
     {
-        $pageService = $this->get('agit.page');
         $reqDetails = $this->load($request);
         $pageDetails = null;
         $response = null;
@@ -28,16 +55,16 @@ class CatchallController extends Controller
         if (isset($reqDetails['canonical']) && $request->getPathInfo() !== $reqDetails['canonical'])
         {
             parse_str((string)$request->getQueryString(), $query);
-            $redirectUrl = $pageService->createUrl($reqDetails['canonical'], '', $query);
+            $redirectUrl = $this->pageService->createUrl($reqDetails['canonical'], '', $query);
             $response = $this->createRedirectResponse($redirectUrl);
         }
         else
         {
-            $pageDetails = $pageService->loadPage($reqDetails['vPath']);
+            $pageDetails = $this->pageService->loadPage($reqDetails['vPath']);
             $response = $this->createResponse($pageDetails, $reqDetails);
         }
 
-        $this->get('event_dispatcher')->dispatch(
+        $this->eventDispatcher->dispatch(
             'agit.page.request',
             new PageRequestEvent($request, $response, $reqDetails, $pageDetails)
         );
@@ -45,12 +72,11 @@ class CatchallController extends Controller
         return $response;
     }
 
-    public function exceptionAction(Request $request, FlattenException $exception, $format = 'txt')
+    public function exceptionAction(Request $request, FlattenException $exception)
     {
         $status = $exception->getStatusCode();
         $debug = $this->getParameter('kernel.debug');
         $trace = $debug && $status >= 500 ? print_r($exception->getTrace(), true) : '';
-        $pageService = $this->get('agit.page');
 
         $message = ($status && $status < 500) || $debug
             ? $exception->getMessage()
@@ -61,9 +87,9 @@ class CatchallController extends Controller
             $message . sprintf(' in %s:%d', $exception->getMessage(), $exception->getTrace()[0]['file'], $exception->getTrace()[0]['line']);
         }
 
-        if ($pageService->pageExists('_exception') && $format === 'html')
+        if ($this->pageService->pageExists('_exception'))
         {
-            $pageDetails = $pageService->getPage('_exception');
+            $pageDetails = $this->pageService->getPage('_exception');
             $reqDetails = $this->load($request);
             $response = $this->createResponse($pageDetails, $reqDetails, ['message' => $message, 'trace' => $trace]);
         }
@@ -71,6 +97,7 @@ class CatchallController extends Controller
         {
             $response = new Response("$message\n\n$trace");
             $this->setCommonHeaders($response, $status);
+            $response->headers->set('Content-Type', 'text/plain; charset=utf-8', true);
         }
 
         return $response;
@@ -78,15 +105,13 @@ class CatchallController extends Controller
 
     private function load($request)
     {
-        $localeService = $this->get('agit.intl.locale');
-
         // we’ll try to provide error messages in the UA’s language until the real locale is set
-        $localeService->setLocale($localeService->getUserLocale());
+        $this->localeService->setLocale($this->localeService->getUserLocale());
 
-        $reqDetails = $this->get('agit.page')->parseRequest($request->getPathInfo());
+        $reqDetails = $this->pageService->parseRequest($request->getPathInfo());
 
         // now set real locale as per request
-        $localeService->setLocale($reqDetails['locale']);
+        $this->localeService->setLocale($reqDetails['locale']);
 
         return $reqDetails;
     }
@@ -95,7 +120,7 @@ class CatchallController extends Controller
     {
         $variables = [
             'locale' => $reqDetails['locale'],
-            'vPath' => $reqDetails['vPath']
+            'vPath' => $pageDetails['vPath']
         ] + $extraVariables;
 
         if (isset($reqDetails['localeUrls']) && isset($reqDetails['localeUrls'][$reqDetails['locale']]))

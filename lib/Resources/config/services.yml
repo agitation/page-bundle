@@ -1,4 +1,8 @@
 services:
+    Agit\PageBundle\Controller\CatchallController:
+        autowire: true
+        public: true
+
     agit.page.cache:
         private : true
         class: Doctrine\Common\Cache\FilesystemCache
@@ -29,3 +33,7 @@ services:
         class: Agit\PageBundle\EventListener\TranslationTwigListener
         arguments: [ "@agit.common.filecollector", "@twig" ]
         tags: [{ name: kernel.event_listener, event: agit.intl.bundle.files, method: onRegistration }]
+
+
+    # aliases
+    Agit\PageBundle\Service\PageService : "@agit.page"
