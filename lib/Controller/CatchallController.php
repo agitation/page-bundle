@@ -84,21 +84,12 @@ class CatchallController extends Controller
 
         if ($debug)
         {
-            $message . sprintf(' in %s:%d', $exception->getMessage(), $exception->getTrace()[0]['file'], $exception->getTrace()[0]['line']);
+            $message .= sprintf(' in %s:%d', $exception->getTrace()[0]['file'], $exception->getTrace()[0]['line']);
         }
 
-        if ($this->pageService->pageExists('_exception'))
-        {
-            $pageDetails = $this->pageService->getPage('_exception');
-            $reqDetails = $this->load($request);
-            $response = $this->createResponse($pageDetails, $reqDetails, ['message' => $message, 'trace' => $trace]);
-        }
-        else
-        {
-            $response = new Response("$message\n\n$trace");
-            $this->setCommonHeaders($response, $status);
-            $response->headers->set('Content-Type', 'text/plain; charset=utf-8', true);
-        }
+        $response = new Response("$message\n\n$trace");
+        $this->setCommonHeaders($response, $status);
+        $response->headers->set('Content-Type', 'text/plain; charset=utf-8', true);
 
         return $response;
     }
