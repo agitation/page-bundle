@@ -34,7 +34,7 @@ class PageService
 
     private $userService;
 
-    public function __construct(Cache $cache, UrlService $urlService, LocaleService $localeService, LocaleConfigService $localeConfigService, $cacheKey, UserService $userService = null)
+    public function __construct(Cache $cache, UrlService $urlService, LocaleService $localeService, LocaleConfigService $localeConfigService, UserService $userService, string $cacheKey)
     {
         $this->pages = $cache->fetch($cacheKey) ?: [];
         $this->urlService = $urlService;
@@ -157,7 +157,7 @@ class PageService
             }
             elseif ($page['caps'])
             {
-                if (! $this->userService || ! $this->userService->getCurrentUser())
+                if (! $this->userService->getCurrentUser())
                 {
                     $page = $this->getPage('_unauthorized');
                 }

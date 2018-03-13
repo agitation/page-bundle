@@ -1,3 +1,7 @@
+parameters:
+    cache_key : "agit.page"
+    cache_subdir : "agit/page"
+
 services:
     Agit\PageBundle\Controller\CatchallController:
         autowire: true
@@ -6,15 +10,15 @@ services:
     agit.page.cache:
         private : true
         class: Doctrine\Common\Cache\FilesystemCache
-        arguments: [ "%kernel.cache_dir%/agit/page" ]
+        arguments: [ "%kernel.cache_dir%/%cache_subdir%" ]
 
     agit.page:
         class: Agit\PageBundle\Service\PageService
-        arguments: [ "@agit.page.cache", "@agit.common.url", "@agit.intl.locale", "@agit.intl.config", "agit.pages", "@?agit.user" ]
+        arguments: [ "@agit.page.cache", "@agit.common.url", "@agit.intl.locale", "@agit.intl.config", "@agit.user", "%cache_key%" ]
 
     agit.page.collector:
         class: Agit\PageBundle\Service\PageCollector
-        arguments: [ "@agit.page.cache", "@kernel", "@agit.common.filecollector", "@agit.intl.locale", "@twig", "agit.pages" ]
+        arguments: [ "@agit.page.cache", "@kernel", "@agit.common.filecollector", "@agit.intl.locale", "@twig", "%cache_key%" ]
         tags: [{ name: kernel.cache_warmer }]
 
     # Handles our custom Twig syntax for the page meta data

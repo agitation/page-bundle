@@ -14,7 +14,7 @@ use Agit\BaseBundle\Service\FileCollector;
 use Agit\IntlBundle\Service\LocaleService;
 use Agit\PageBundle\Exception\InvalidConfigurationException;
 use Agit\PageBundle\TwigMeta\PageConfigExtractorTrait;
-use Doctrine\Common\Cache\Cache;
+use Doctrine\Common\Cache\FilesystemCache;
 use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerInterface;
 use Symfony\Component\HttpKernel\Kernel;
 use Twig_Environment;
@@ -52,7 +52,7 @@ final class PageCollector implements CacheWarmerInterface
 
     private $availableLocales;
 
-    public function __construct(Cache $cache, Kernel $kernel, FileCollector $fileCollector, LocaleService $localeService, Twig_Environment $twig, $cacheKey)
+    public function __construct(FilesystemCache $cache, Kernel $kernel, FileCollector $fileCollector, LocaleService $localeService, Twig_Environment $twig, $cacheKey)
     {
         $this->cache = $cache;
         $this->kernel = $kernel;
@@ -88,26 +88,26 @@ final class PageCollector implements CacheWarmerInterface
 
         foreach ($this->kernel->getBundles() as $alias => $bundle)
         {
-            $viewsPaths[] = $this->fileCollector->resolve("$alias:Resources:views");
+            $viewsPaths["@$alias/Resources/views"] = $this->fileCollector->resolve("$alias:Resources:views");
         }
 
-        $viewsPaths[] = $this->kernel->getRootDir() . '/Resources/views';
         $viewsPaths = array_filter($viewsPaths);
 
-        foreach ($viewsPaths as $viewsPath)
+        foreach ($viewsPaths as $aliasPath => $realPath)
         {
             foreach ($this->availableTypes as $type => $subdir)
             {
-                $path = "$viewsPath/$subdir";
+                $subdirRealPath = "$realPath/$subdir";
+                $subdirAliasPath = "$aliasPath/$subdir";
 
-                if (! is_dir($path))
+                if (! is_dir($subdirRealPath))
                 {
                     continue;
                 }
 
-                foreach ($this->fileCollector->collect($path, self::FILE_EXTENSION) as $pagePath)
+                foreach ($this->fileCollector->collect($subdirRealPath, self::FILE_EXTENSION) as $pagePath)
                 {
-                    $data = $this->getData($type, $subdir, $path, $pagePath, self::FILE_EXTENSION);
+                    $data = $this->getData($type, $subdir, $subdirRealPath, $subdirAliasPath, $pagePath, self::FILE_EXTENSION);
                     $pages[$data['vPath']] = $data;
                 }
             }
@@ -116,14 +116,14 @@ final class PageCollector implements CacheWarmerInterface
         $this->cache->save($this->cacheKey, $pages);
     }
 
-    protected function getData($type, $subdir, $basePath, $pagePath, $extension)
+    protected function getData($type, $subdir, $baseRealPath, $baseAliasPath, $pagePath, $extension)
     {
-        $page = str_replace(["$basePath/", ".$extension"], '', $pagePath);
+        $page = str_replace(["$baseRealPath/", ".$extension"], '', $pagePath);
 
         $data = [
             'type' => $type,
             'vPath' => ($type === 'page') ? $this->pageToVirtualPath($page) : '_' . basename($page),
-            'template' => $this->pathToTemplateName($basePath, $page, $extension),
+            'template' => "$baseAliasPath/$page.$extension",
             'order' => $this->getOrderPosition($page)
         ];
 
@@ -210,11 +210,6 @@ final class PageCollector implements CacheWarmerInterface
         });
 
         return '/' . implode('/', $parts);
-    }
-
-    protected function pathToTemplateName($basePath, $page, $extension)
-    {
-        return "$basePath/$page.$extension";
     }
 
     protected function getOrderPosition($page)
