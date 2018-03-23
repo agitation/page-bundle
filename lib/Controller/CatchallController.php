@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+
 /*
  * @package    agitation/page-bundle
  * @link       http://github.com/agitation/page-bundle
@@ -9,16 +10,16 @@ declare(strict_types=1);
 
 namespace Agit\PageBundle\Controller;
 
-use Agit\IntlBundle\Tool\Translate;
 use Agit\IntlBundle\Service\LocaleService;
+use Agit\IntlBundle\Tool\Translate;
 
 use Agit\PageBundle\Event\PageRequestEvent;
 use Agit\PageBundle\Service\PageService;
 
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+
 use Symfony\Component\Debug\Exception\FlattenException;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -30,13 +31,13 @@ class CatchallController extends Controller
     private $eventDispatcher;
 
     /**
-    * @var PageService
-    */
+     * @var PageService
+     */
     private $pageService;
 
     /**
-    * @var LocaleService
-    */
+     * @var LocaleService
+     */
     private $localeService;
 
     public function __construct(EventDispatcherInterface $eventDispatcher, PageService $pageService, LocaleService $localeService)

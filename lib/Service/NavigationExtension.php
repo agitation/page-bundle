@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+
 /*
  * @package    agitation/page-bundle
  * @link       http://github.com/agitation/page-bundle
@@ -90,6 +91,7 @@ class NavigationExtension extends Twig_Extension
     public function getPageName($context)
     {
         $page = $this->pageService->getPage($context['vPath']);
+
         return $page['names'][$context['locale']];
     }
 
