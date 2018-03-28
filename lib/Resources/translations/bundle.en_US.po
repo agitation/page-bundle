@@ -3,24 +3,12 @@ msgstr ""
 "Language: en_US\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 
-#: @AgitPageBundle/Controller/CatchallController.php:54
+#: @AgitPageBundle/Controller/CatchallController.php:84
 msgid "Sorry, there has been an internal error. The administrators have been notified and will fix this as soon as possible."
 msgstr ""
 
-#: @AgitPageBundle/Resources/views/Special/forbidden.html.twig:25
-msgid "You are not allowed to access this page."
-msgstr ""
-
-#: @AgitPageBundle/Resources/views/Special/unauthorized.html.twig:25
-msgid "Please log in to access this page."
-msgstr ""
-
-#: @AgitPageBundle/Resources/views/Special/notfound.html.twig:25
-msgid "The requested page could not be found. Please check the spelling of the address, or notify the owner of the referring web page."
-msgstr ""
-
-#: @AgitPageBundle/Resources/views/Special/exception.html.twig:1
-msgid "Something went wrong"
+#: @AgitPageBundle/Resources/views/Special/notfound.html.twig:1
+msgid "Page not found"
 msgstr ""
 
 #: @AgitPageBundle/Resources/views/Special/forbidden.html.twig:1
@@ -32,6 +20,6 @@ msgstr ""
 msgid "Unauthorized"
 msgstr ""
 
-#: @AgitPageBundle/Resources/views/Special/notfound.html.twig:1
-msgid "Page not found"
+#: @AgitPageBundle/Resources/views/Special/exception.html.twig:1
+msgid "Something went wrong"
 msgstr ""
